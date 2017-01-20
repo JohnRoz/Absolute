@@ -27,34 +27,37 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        for(int i = 0;i<11;i++){
-            Random random = new Random();
-            int index = random.nextInt(getRawResourcesIds().size());
-            int resId = getRawResourcesIds().get(index);
-            Log.d("TAG!!", "resId: " + resId);
-            MediaPlayer mp = MediaPlayer.create(getApplicationContext(), resId);
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.release();
-                    mp = null;
+        FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.fab2);
+        fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for(int i = 0;i<11;i++){
+                    Random random = new Random();
+                    int index = random.nextInt(getRawResourcesIds().size());
+                    int resId = getRawResourcesIds().get(index);
+                    MediaPlayer mp = MediaPlayer.create(getApplicationContext(), resId);
+                    mp.start();
+                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            mp.release();
+                            mp = null;
+                        }
+                    });
                 }
-            });
-        }
+            }
+        });
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
 
                 Random random = new Random();
                 int index = random.nextInt(getRawResourcesIds().size());
                 int resId = getRawResourcesIds().get(index);
-                Log.d("TAG!!", "resId: " + resId);
                 MediaPlayer mp = MediaPlayer.create(getApplicationContext(), resId);
                 mp.start();
                 mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
