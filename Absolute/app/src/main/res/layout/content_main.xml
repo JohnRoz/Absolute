@@ -12,12 +12,12 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.user1.absolute.MainActivity"
     tools:showIn="@layout/activity_main"
-    android:background="@color/backgroundColor">
+    android:background="@color/colorPrimary">
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/absolute_headline"
+        android:src="@drawable/absolute_headline_white"
         android:id="@+id/headline"/>
 
     <Button
@@ -30,7 +30,8 @@
         android:id="@+id/playBtn"
         android:text="PLAY"
         android:textSize="20sp"
-        android:textColor="#103050"/>
+        android:textColor="@color/buttonsTextColor"/>
+    <!-- textColor="#103050" -->
 
     <Button
         android:layout_width="match_parent"
@@ -43,7 +44,7 @@
         android:id="@+id/highScores"
         android:text="High Scores"
         android:textSize="20sp"
-        android:textColor="#103050"/>
+        android:textColor="@color/buttonsTextColor"/>
 
 
 </RelativeLayout>
