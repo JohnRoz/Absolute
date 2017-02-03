@@ -14,7 +14,8 @@
     tools:showIn="@layout/activity_main"
     android:background="@color/colorPrimary">
 
-    <ImageView
+
+     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/absolute_headline_white"
@@ -31,7 +32,6 @@
         android:text="PLAY"
         android:textSize="20sp"
         android:textColor="@color/buttonsTextColor"/>
-    <!-- textColor="#103050" -->
 
     <Button
         android:layout_width="match_parent"
@@ -45,6 +45,8 @@
         android:text="High Scores"
         android:textSize="20sp"
         android:textColor="@color/buttonsTextColor"/>
+
+
 
 
 </RelativeLayout>

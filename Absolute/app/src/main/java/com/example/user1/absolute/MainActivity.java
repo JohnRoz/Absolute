@@ -1,5 +1,7 @@
 package com.example.user1.absolute;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -10,28 +12,48 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.Toast;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Random;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 
+    @BindView(R.id.playBtn)
+    Button playBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.drawer_layout);
+        setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        ButterKnife.bind(this);//ButterKnife is awesome!
 
+        fabsOnClick();
+
+
+        playBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "Hello", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+    }
+
+    private void fabsOnClick() {
         FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.fab2);
         fab2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                for(int i = 0;i<11;i++){
+                for (int i = 0; i < 11; i++) {
                     Random random = new Random();
                     int index = random.nextInt(getRawResourcesIds().size());
                     int resId = getRawResourcesIds().get(index);
@@ -126,10 +148,10 @@ public class MainActivity extends AppCompatActivity {
         return rawResourcesNames;
     }
 
-    private ArrayList<Integer> getRawResourcesIds(){
+    private ArrayList<Integer> getRawResourcesIds() {
         ArrayList<Integer> IDs = new ArrayList<>();
-        for (String name : getRawResourcesNames()){
-            int id = getApplicationContext().getResources().getIdentifier(name,"raw", "com.example.user1.absolute");
+        for (String name : getRawResourcesNames()) {
+            int id = getApplicationContext().getResources().getIdentifier(name, "raw", "com.example.user1.absolute");
             IDs.add(id);
         }
         return IDs;
