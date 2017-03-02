@@ -3,4 +3,6 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_choose_mode">ChooseModeActivity</string>
     <string name="title_activity_modes">ModesActivity</string>
+    <string name="title_activity_play">PlayActivity</string>
+    <string name="title_activity_play_notes">PlayNotesActivity</string>
 </resources>

@@ -1,78 +1,24 @@
 package com.example.user1.absolute;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.Toast;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Random;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
-public class MainActivity extends AppCompatActivity {
-
-    public ArrayList<Integer> ResourcesIds = getRawResourcesIds();
-
-    @BindView(R.id.playBtn)
-    Button playBtn;
+public class PlayNotesActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_play_notes);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        ButterKnife.bind(this);//ButterKnife is awesome!
-
-        fabsOnClick();
-
-
-        playBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Hello", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-    }
-
-
-    private void fabsOnClick() {
-        FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.fab2);
-        fab2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for (int i = 0; i < 11; i++) {
-                    Random random = new Random();
-                    int index = random.nextInt(getRawResourcesIds().size());
-                    int resId = getRawResourcesIds().get(index);
-                    MediaPlayer mp = MediaPlayer.create(getApplicationContext(), resId);
-                    mp.start();
-                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-                            mp.release();
-                            mp = null;
-                        }
-                    });
-                }
-            }
-        });
-
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -96,27 +42,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     /**
      * The sinner function (but it's a necessary sin).
@@ -159,4 +84,5 @@ public class MainActivity extends AppCompatActivity {
         }
         return IDs;
     }
+
 }
