@@ -30,6 +30,14 @@
         <activity
             android:name=".PlayNotesActivity"
             android:label="@string/title_activity_play_notes"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".SignUpActivity"
+            android:label="@string/title_activity_sign_up"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".PlayChordsActivity"
+            android:label="@string/title_activity_play_chords"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

@@ -5,4 +5,6 @@
     <string name="title_activity_modes">ModesActivity</string>
     <string name="title_activity_play">PlayActivity</string>
     <string name="title_activity_play_notes">PlayNotesActivity</string>
+    <string name="title_activity_sign_up">SignUpActivity</string>
+    <string name="title_activity_play_chords">PlayChordsActivity</string>
 </resources>
