@@ -6,6 +6,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 
 public class PlayChordsActivity extends AppCompatActivity {
 
@@ -24,6 +25,10 @@ public class PlayChordsActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        Button majorBtn = (Button) findViewById(R.id.majorBtn);
     }
+
+
 
 }

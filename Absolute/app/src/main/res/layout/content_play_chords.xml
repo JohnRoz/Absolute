@@ -14,9 +14,27 @@
 
 
     <Button
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        />
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:id="@+id/majorBtn"
+        android:layout_alignTop="@+id/minorBtn"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:text="Major"
+        android:textSize="25sp"
+        android:textAllCaps="false"/>
+
+    <Button
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:id="@+id/minorBtn"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="132dp"
+        android:text="Minor"
+        android:textSize="25sp"
+        android:textAllCaps="false"/>
 
 
 </RelativeLayout>
