@@ -14,27 +14,51 @@
 
 
     <Button
-        android:layout_width="125dp"
-        android:layout_height="125dp"
-        android:id="@+id/majorBtn"
-        android:layout_alignTop="@+id/minorBtn"
+        android:id="@+id/diminishedBtn"
+        android:layout_width="155dp"
+        android:layout_height="155dp"
+        android:text="Diminished"
+        android:textAllCaps="false"
+        android:textSize="25sp"
+        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:text="Major"
-        android:textSize="25sp"
-        android:textAllCaps="false"/>
+        android:layout_marginTop="32dp" />
 
     <Button
-        android:layout_width="125dp"
-        android:layout_height="125dp"
-        android:id="@+id/minorBtn"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="132dp"
-        android:text="Minor"
+        android:id="@+id/augmentedBtn"
+        android:layout_width="155dp"
+        android:layout_height="155dp"
+        android:text="Augmented"
+        android:textAllCaps="false"
         android:textSize="25sp"
-        android:textAllCaps="false"/>
+        android:layout_above="@+id/minorBtn"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:id="@+id/majorBtn"
+        android:layout_width="155dp"
+        android:layout_height="155dp"
+
+        android:text="Major"
+        android:textAllCaps="false"
+        android:textSize="25sp"
+        android:layout_alignTop="@+id/minorBtn"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:id="@+id/minorBtn"
+        android:layout_width="155dp"
+        android:layout_height="155dp"
+        android:text="Minor"
+        android:textAllCaps="false"
+        android:textSize="25sp"
+        android:layout_marginTop="31dp"
+        android:layout_below="@+id/diminishedBtn"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
 
 </RelativeLayout>

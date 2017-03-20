@@ -24,7 +24,7 @@
     <include layout="@layout/content_play_chords" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/playNotesFab"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="bottom|center"
