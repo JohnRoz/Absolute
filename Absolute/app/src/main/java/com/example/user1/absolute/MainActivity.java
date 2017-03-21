@@ -24,7 +24,7 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 
-    public ArrayList<Integer> ResourcesIds = getRawResourcesIds();
+    //public ArrayList<Integer> ResourcesIds = getRawResourcesIds();
 
     @BindView(R.id.playBtn)
     Button playBtn;
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
      *
      * @return The ArrayList of the names of the resources in R.raw .
      */
-    private ArrayList<String> getRawResourcesNames() {
+    public ArrayList<String> getRawResourcesNames() {
 
         //an ArrayList to contain the names of the resources of raw.
         //This is the ArrayList to be returned.
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         return rawResourcesNames;
     }
 
-    private ArrayList<Integer> getRawResourcesIds() {
+    public ArrayList<Integer> getRawResourcesIds() {
         ArrayList<Integer> IDs = new ArrayList<>();
         for (String name : getRawResourcesNames()) {
             int id = getApplicationContext().getResources().getIdentifier(name, "raw", "com.example.user1.absolute");
