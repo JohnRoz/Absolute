@@ -1,6 +1,8 @@
 package com.example.user1.absolute;
 
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -141,22 +143,16 @@ public class PlayChordsActivity extends AppCompatActivity {
             index -= 7;
 
         final int resId = notesList.get(index);
-        MediaPlayer mp = MediaPlayer.create(getApplicationContext(), resId);
-        mp.start();
+        MediaPlayer mpNote1 = MediaPlayer.create(getApplicationContext(), resId);
+        mpNote1.start();
 
-        mp = MediaPlayer.create(getApplicationContext(), resId + 4);
-        mp.start();
+        MediaPlayer mpNote2 = MediaPlayer.create(getApplicationContext(), resId + 4);
+        mpNote2.start();
 
-        mp = MediaPlayer.create(getApplicationContext(), resId + 7);
-        mp.start();
+        MediaPlayer mpNote3 = MediaPlayer.create(getApplicationContext(), resId + 7);
+        mpNote3.start();
 
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                mp.release();
-                mp = null;
-            }
-        });
+        releaseTheMediaPlayers(mpNote1, mpNote2, mpNote3);
 
     }
 
@@ -169,16 +165,36 @@ public class PlayChordsActivity extends AppCompatActivity {
             index -= 7;
 
         final int resId = notesList.get(index);
-        MediaPlayer mp = MediaPlayer.create(getApplicationContext(), resId);
-        mp.start();
+        MediaPlayer mpNote1 = MediaPlayer.create(getApplicationContext(), resId);
+        mpNote1.start();
 
-        mp = MediaPlayer.create(getApplicationContext(), resId + 3);
-        mp.start();
+        MediaPlayer mpNote2 = MediaPlayer.create(getApplicationContext(), resId + 3);
+        mpNote2.start();
 
-        mp = MediaPlayer.create(getApplicationContext(), resId + 7);
-        mp.start();
+        MediaPlayer mpNote3 = MediaPlayer.create(getApplicationContext(), resId + 7);
+        mpNote3.start();
 
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+        releaseTheMediaPlayers(mpNote1, mpNote2, mpNote3);
+    }
+
+    private void releaseTheMediaPlayers(MediaPlayer mpNote1, MediaPlayer mpNote2, MediaPlayer mpNote3) {
+        mpNote1.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mp.release();
+                mp = null;
+            }
+        });
+
+        mpNote2.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mp.release();
+                mp = null;
+            }
+        });
+
+        mpNote3.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 mp.release();
@@ -255,7 +271,6 @@ public class PlayChordsActivity extends AppCompatActivity {
         });
     }
 
-
     private void playRandomDimORAugChord(){
         ArrayList<Integer> notesList = MainActivity.getRawResourcesIds(this);
 
@@ -265,22 +280,40 @@ public class PlayChordsActivity extends AppCompatActivity {
             index -= (chordType.ordinal() + 1) * 2;
 
         final int resId = notesList.get(index);
-        MediaPlayer mp = MediaPlayer.create(getApplicationContext(), resId);
-        mp.start();
+        MediaPlayer mpNote1 = MediaPlayer.create(getApplicationContext(), resId);
+        MediaPlayer mpNote2 = MediaPlayer.create(getApplicationContext(), resId + (chordType.ordinal() + 1));
+        MediaPlayer mpNote3 = MediaPlayer.create(getApplicationContext(), resId + (chordType.ordinal() + 1) * 2);
 
-        mp = MediaPlayer.create(getApplicationContext(), resId + (chordType.ordinal() + 1));
-        mp.start();
+        mpNote1.start();
+        mpNote2.start();
+        mpNote3.start();
 
-        mp = MediaPlayer.create(getApplicationContext(), resId + (chordType.ordinal() + 1) * 2);
-        mp.start();
+        releaseTheMediaPlayers(mpNote1, mpNote2, mpNote3);
 
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                mp.release();
-                mp = null;
-            }
-        });
+    }
+
+    private void playRandomDimORAugChord2(){
+        ArrayList<Integer> notesList = MainActivity.getRawResourcesIds(this);
+
+        Random random = new Random();
+        int index = random.nextInt(notesList.size());
+        if (index >= notesList.size() - (chordType.ordinal() + 1) * 2)
+            index -= (chordType.ordinal() + 1) * 2;
+
+        int resId = notesList.get(index);
+
+        for(int i = 0; i < 3; i++, resId += (chordType.ordinal() + 1)){
+            MediaPlayer mp = MediaPlayer.create(getApplicationContext(), resId);
+            mp.start();
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                    mp.release();
+                    mp = null;
+                }
+            });
+        }
 
     }
 }
