@@ -48,9 +48,11 @@ public class PlayChordsActivity extends AppCompatActivity {
                 switch (chordType) {
                     case Major:
                         playRandomMajorChord();
+                        //Toast.makeText(PlayChordsActivity.this, "Major", Toast.LENGTH_SHORT).show();
                         break;
                     case Minor:
                         playRandomMinorChord();
+                        //Toast.makeText(PlayChordsActivity.this, "Minor", Toast.LENGTH_SHORT).show();
                         break;
                     case Diminished:
                         playRandomDimORAugChord();
@@ -59,6 +61,32 @@ public class PlayChordsActivity extends AppCompatActivity {
                         playRandomDimORAugChord();
                         break;
                 }
+            }
+        });
+
+        initiateCheckAnswers();
+
+
+    }
+
+    private void initiateCheckAnswers() {
+        majorBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(chordType == ChordType.Major)
+                    Toast.makeText(PlayChordsActivity.this, "CORRECT!", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(PlayChordsActivity.this, "WRONG!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        minorBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(chordType == ChordType.Minor)
+                    Toast.makeText(PlayChordsActivity.this, "CORRECT!", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(PlayChordsActivity.this, "WRONG!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -81,7 +109,6 @@ public class PlayChordsActivity extends AppCompatActivity {
                     Toast.makeText(PlayChordsActivity.this, "WRONG!", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
     /**
@@ -106,11 +133,58 @@ public class PlayChordsActivity extends AppCompatActivity {
     }
 
     private void playRandomMajorChord() {
-        Toast.makeText(this, "I did not program Major yet", Toast.LENGTH_SHORT).show();
+        ArrayList<Integer> notesList = MainActivity.getRawResourcesIds(this);
+
+        Random random = new Random();
+        int index = random.nextInt(notesList.size());
+        if (index >= notesList.size() - 7)
+            index -= 7;
+
+        final int resId = notesList.get(index);
+        MediaPlayer mp = MediaPlayer.create(getApplicationContext(), resId);
+        mp.start();
+
+        mp = MediaPlayer.create(getApplicationContext(), resId + 4);
+        mp.start();
+
+        mp = MediaPlayer.create(getApplicationContext(), resId + 7);
+        mp.start();
+
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mp.release();
+                mp = null;
+            }
+        });
+
     }
 
     private void playRandomMinorChord() {
-        Toast.makeText(this, "I did not program Minor yet", Toast.LENGTH_SHORT).show();
+        ArrayList<Integer> notesList = MainActivity.getRawResourcesIds(this);
+
+        Random random = new Random();
+        int index = random.nextInt(notesList.size());
+        if (index >= notesList.size() - 7)
+            index -= 7;
+
+        final int resId = notesList.get(index);
+        MediaPlayer mp = MediaPlayer.create(getApplicationContext(), resId);
+        mp.start();
+
+        mp = MediaPlayer.create(getApplicationContext(), resId + 3);
+        mp.start();
+
+        mp = MediaPlayer.create(getApplicationContext(), resId + 7);
+        mp.start();
+
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mp.release();
+                mp = null;
+            }
+        });
     }
 
     private void playRandomDiminishedChord() {
@@ -181,33 +255,6 @@ public class PlayChordsActivity extends AppCompatActivity {
         });
     }
 
-    private void playRandomDiminishedChord2(){
-
-        ArrayList<Integer> notesList = MainActivity.getRawResourcesIds(this);
-
-        Random random = new Random();
-        int index = random.nextInt(notesList.size());
-        if (index >= notesList.size() - (chordType.ordinal() + 1) * 2)
-            index -= (chordType.ordinal() + 1) * 2;
-
-        final int resId = notesList.get(index);
-        MediaPlayer mp = MediaPlayer.create(getApplicationContext(), resId);
-        mp.start();
-
-        mp = MediaPlayer.create(getApplicationContext(), resId + (chordType.ordinal() + 1));
-        mp.start();
-
-        mp = MediaPlayer.create(getApplicationContext(), resId + (chordType.ordinal() + 1) * 2);
-        mp.start();
-
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                mp.release();
-                mp = null;
-            }
-        });
-    }
 
     private void playRandomDimORAugChord(){
         ArrayList<Integer> notesList = MainActivity.getRawResourcesIds(this);
