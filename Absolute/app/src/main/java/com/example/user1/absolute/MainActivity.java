@@ -2,6 +2,8 @@ package com.example.user1.absolute;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -26,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
     //public ArrayList<Integer> ResourcesIds = getRawResourcesIds();
 
-    @BindView(R.id.playBtn)
-    Button playBtn;
+    @BindView(R.id.playChordsBtn)
+    Button playChordsBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,20 +39,21 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);//ButterKnife is awesome!
 
-        fabsOnClick();
+        //fabsOnClick();
 
 
-        playBtn.setOnClickListener(new View.OnClickListener() {
+        playChordsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Hello", Toast.LENGTH_SHORT).show();
+                Intent playChordsIntent = new Intent(MainActivity.this, PlayChordsActivity.class);
+                startActivity(playChordsIntent);
             }
         });
     }
 
-
+/*
     private void fabsOnClick() {
-        FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.fab2);
+        FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.fab);
         fab2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,8 +73,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        */
 
-
+/*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -121,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
      *
      * @return The ArrayList of the names of the resources in R.raw .
      */
-    public ArrayList<String> getRawResourcesNames() {
+    public static ArrayList<String> getRawResourcesNames(Context context) {
 
         //an ArrayList to contain the names of the resources of raw.
         //This is the ArrayList to be returned.
@@ -138,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
             resourceName = field.getName();
 
             //if the id of the resource isn't 0 (if it is it brings up problems)
-            if (getApplicationContext().getResources().getIdentifier(resourceName, "raw", "com.example.user1.absolute") != 0)
+            if (context.getResources().getIdentifier(resourceName, "raw", "com.example.user1.absolute") != 0)
                 //the loop adds each name of each of the resources of raw to an ArrayList
                 rawResourcesNames.add(resourceName);
 
@@ -149,12 +154,18 @@ public class MainActivity extends AppCompatActivity {
         return rawResourcesNames;
     }
 
-    public ArrayList<Integer> getRawResourcesIds() {
+    /**
+     *
+     * @param context A Static method cannot use the getApplicationContext() method, so just insert a Context.
+     * @return An ArrayList of the IDs of my raw resource files.
+     */
+    public static ArrayList<Integer> getRawResourcesIds(Context context) {
         ArrayList<Integer> IDs = new ArrayList<>();
-        for (String name : getRawResourcesNames()) {
-            int id = getApplicationContext().getResources().getIdentifier(name, "raw", "com.example.user1.absolute");
+        for (String name : getRawResourcesNames(context)) {
+            int id = context.getResources().getIdentifier(name, "raw", "com.example.user1.absolute");
             IDs.add(id);
         }
         return IDs;
     }
+
 }

@@ -35,4 +35,7 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.4.0'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
 
+    //ConstraintLayout for Android
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+
 }
