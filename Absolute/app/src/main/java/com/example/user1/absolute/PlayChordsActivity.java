@@ -31,7 +31,9 @@ public class PlayChordsActivity extends AppCompatActivity {
     Button augmentedBtn;
     @BindView(R.id.playNotesFab)
     FloatingActionButton playNotesFab;
+
     ChordType chordType;
+    int wrongAnswersCounter;//TODO: <== This
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,36 +43,24 @@ public class PlayChordsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
 
-
+        final ArrayList<Integer> notesList = MainActivity.getRawResourcesIds(this);
 
         playNotesFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 chordType = setChordType();
-                switch (chordType) {
-                    case Major:
-                        playRandomMajorChord();
-                        //Toast.makeText(PlayChordsActivity.this, "Major", Toast.LENGTH_SHORT).show();
-                        break;
-                    case Minor:
-                        playRandomMinorChord();
-                        //Toast.makeText(PlayChordsActivity.this, "Minor", Toast.LENGTH_SHORT).show();
-                        break;
-                    case Diminished:
-                        playRandomDimORAugChord();
-                        break;
-                    case Augmented:
-                        playRandomDimORAugChord();
-                        break;
-                }
+                playChord(notesList, chordType);
             }
         });
 
         initiateCheckAnswers();
 
-
+        //TODO: Add a Replay Button for the users to use in case they want to listen to the chord that was played once more.
     }
 
+    /**
+     * This method is responsible of the clickListeners of the answer buttons in this activity.
+     */
     private void initiateCheckAnswers() {
         majorBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,10 +101,10 @@ public class PlayChordsActivity extends AppCompatActivity {
                     Toast.makeText(PlayChordsActivity.this, "WRONG!", Toast.LENGTH_SHORT).show();
             }
         });
-    }
+    }//TODO: change from Toasts to cool animations
 
     /**
-     * This Method sets the type of the chord that the app is going to play, using the chordType enum.
+     * This Method sets the type of the chord that the app is going to play, using the {@link ChordType} enum.
      *
      * @return A random chord type from the 4 possibilities: Major, Minor, Diminished and Augmented.
      */
@@ -127,6 +117,9 @@ public class PlayChordsActivity extends AppCompatActivity {
         return chordTypes[rnd.nextInt(ChordType.values().length)];
     }
 
+    /**
+     * This is an enum that is used to arrange the constants symbolizing the 'types' of chords: Major, Minor, Diminished and Augmented.
+     */
     enum ChordType {
         Major,
         Minor,
@@ -134,49 +127,109 @@ public class PlayChordsActivity extends AppCompatActivity {
         Augmented;
     }
 
-    private void playRandomMajorChord() {
-        ArrayList<Integer> notesList = MainActivity.getRawResourcesIds(this);
+    /**
+     * This method is in charge of activating the right 'playRandom...Chord()' methods according to the ChordType it gets as a parameter.
+     * @param notesList An ArrayList of the resource IDs of the raw audio files.
+     * @param chordType The type of the chord that should be played: Major, Minor, Diminished or Augmented.
+     */
+    private void playChord(ArrayList<Integer> notesList, ChordType chordType){
+        switch (chordType) {
+            case Major:
+                playRandomMajorChord(notesList);
+                break;
+            case Minor:
+                playRandomMinorChord(notesList);
+                break;
+            default://PAY ATTENTION! If you get Dim/Aug chords **ALL THE TIME**, then this is probably the problem!
+                playRandomDimORAugChord(notesList);
+                break;
+        }
+    }
+
+    /**
+     * This method is in charge of activating 3 MediaPlayers simultaneously, in order to create a Major chord.
+     * @param notesList An ArrayList of the resource IDs of the raw audio files.
+     */
+    private void playRandomMajorChord(ArrayList<Integer> notesList) {
 
         Random random = new Random();
         int index = random.nextInt(notesList.size());
+
+        // 7 semitones is the distance between the first note of the chord and the last one in a Major/Minor chord
+        // This is to prevent an indexOutOfBoundsException.
+        // (If i don't do this, the MediaPlayer could try to access resources that don't exist.)
         if (index >= notesList.size() - 7)
             index -= 7;
 
         final int resId = notesList.get(index);
         MediaPlayer mpNote1 = MediaPlayer.create(getApplicationContext(), resId);
-        mpNote1.start();
-
-        MediaPlayer mpNote2 = MediaPlayer.create(getApplicationContext(), resId + 4);
-        mpNote2.start();
-
+        MediaPlayer mpNote2 = MediaPlayer.create(getApplicationContext(), resId + 4);// major terza
         MediaPlayer mpNote3 = MediaPlayer.create(getApplicationContext(), resId + 7);
+
+        mpNote1.start();
+        mpNote2.start();
         mpNote3.start();
 
         releaseTheMediaPlayers(mpNote1, mpNote2, mpNote3);
 
     }
 
-    private void playRandomMinorChord() {
-        ArrayList<Integer> notesList = MainActivity.getRawResourcesIds(this);
+    /**
+     * This method is in charge of activating 3 MediaPlayers simultaneously, in order to create a Minor chord.
+     * @param notesList An ArrayList of the resource IDs of the raw audio files.
+     */
+    private void playRandomMinorChord(ArrayList<Integer> notesList) {
 
         Random random = new Random();
+
+        // 7 semitones is the distance between the first note of the chord and the last one in a Major/Minor chord.
+        // This is to prevent an indexOutOfBoundsException.
+        // (If i don't do this, the MediaPlayer could try to access resources that don't exist.)
         int index = random.nextInt(notesList.size());
         if (index >= notesList.size() - 7)
             index -= 7;
 
         final int resId = notesList.get(index);
         MediaPlayer mpNote1 = MediaPlayer.create(getApplicationContext(), resId);
-        mpNote1.start();
-
-        MediaPlayer mpNote2 = MediaPlayer.create(getApplicationContext(), resId + 3);
-        mpNote2.start();
-
+        MediaPlayer mpNote2 = MediaPlayer.create(getApplicationContext(), resId + 3);// minor terza
         MediaPlayer mpNote3 = MediaPlayer.create(getApplicationContext(), resId + 7);
+
+        mpNote1.start();
+        mpNote2.start();
         mpNote3.start();
 
         releaseTheMediaPlayers(mpNote1, mpNote2, mpNote3);
     }
 
+    /**
+     * This method is in charge of activating 3 MediaPlayers simultaneously, in order to create a Diminished chord, or an augmented chord, depends on the chordType that was chosen randomly.
+     * @param notesList An ArrayList of the resource IDs of the raw audio files.
+     */
+    private void playRandomDimORAugChord(ArrayList<Integer> notesList){
+        Random random = new Random();
+        int index = random.nextInt(notesList.size());
+        if (index >= notesList.size() - (chordType.ordinal() + 1) * 2)
+            index -= (chordType.ordinal() + 1) * 2;
+
+        final int resId = notesList.get(index);
+        MediaPlayer mpNote1 = MediaPlayer.create(getApplicationContext(), resId);
+        MediaPlayer mpNote2 = MediaPlayer.create(getApplicationContext(), resId + (chordType.ordinal() + 1));
+        MediaPlayer mpNote3 = MediaPlayer.create(getApplicationContext(), resId + (chordType.ordinal() + 1) * 2);
+
+        mpNote1.start();
+        mpNote2.start();
+        mpNote3.start();
+
+        releaseTheMediaPlayers(mpNote1, mpNote2, mpNote3);
+
+    }
+
+    /**
+     * This method is responsible of releasing system resources, particularly the MediaPlayers, who should be released after usage.
+     * @param mpNote1 The first MediaPlayer to release.
+     * @param mpNote2 The second MediaPlayer to release.
+     * @param mpNote3 The third MediaPlayer to release.
+     */
     private void releaseTheMediaPlayers(MediaPlayer mpNote1, MediaPlayer mpNote2, MediaPlayer mpNote3) {
         mpNote1.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -201,119 +254,5 @@ public class PlayChordsActivity extends AppCompatActivity {
                 mp = null;
             }
         });
-    }
-
-    private void playRandomDiminishedChord() {
-        ArrayList<Integer> notesList = MainActivity.getRawResourcesIds(this);
-
-        Random random = new Random();
-        int index = random.nextInt(notesList.size());
-        if (index >= notesList.size() - 6)
-            index -= 6;
-
-        final int resId = notesList.get(index);
-        MediaPlayer mp = MediaPlayer.create(getApplicationContext(), resId);
-        mp.start();
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                mp = MediaPlayer.create(getApplicationContext(), resId + 3);
-                mp.start();
-                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        mp = MediaPlayer.create(getApplicationContext(), resId + 6);
-                        mp.start();
-                        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mp) {
-                                mp.release();
-                                mp = null;
-                            }
-                        });
-                    }
-                });
-            }
-        });
-    }
-
-    private void playRandomAugmentedChord() {
-        ArrayList<Integer> notesList = MainActivity.getRawResourcesIds(this);
-
-        Random random = new Random();
-        int index = random.nextInt(notesList.size());
-        if (index >= notesList.size() - 8)
-            index -= 8;
-
-        final int resId = notesList.get(index);
-        MediaPlayer mp = MediaPlayer.create(getApplicationContext(), resId);
-        mp.start();
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                mp = MediaPlayer.create(getApplicationContext(), resId + 4);
-                mp.start();
-                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        mp = MediaPlayer.create(getApplicationContext(), resId + 8);
-                        mp.start();
-                        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mp) {
-                                mp.release();
-                                mp = null;
-                            }
-                        });
-                    }
-                });
-            }
-        });
-    }
-
-    private void playRandomDimORAugChord(){
-        ArrayList<Integer> notesList = MainActivity.getRawResourcesIds(this);
-
-        Random random = new Random();
-        int index = random.nextInt(notesList.size());
-        if (index >= notesList.size() - (chordType.ordinal() + 1) * 2)
-            index -= (chordType.ordinal() + 1) * 2;
-
-        final int resId = notesList.get(index);
-        MediaPlayer mpNote1 = MediaPlayer.create(getApplicationContext(), resId);
-        MediaPlayer mpNote2 = MediaPlayer.create(getApplicationContext(), resId + (chordType.ordinal() + 1));
-        MediaPlayer mpNote3 = MediaPlayer.create(getApplicationContext(), resId + (chordType.ordinal() + 1) * 2);
-
-        mpNote1.start();
-        mpNote2.start();
-        mpNote3.start();
-
-        releaseTheMediaPlayers(mpNote1, mpNote2, mpNote3);
-
-    }
-
-    private void playRandomDimORAugChord2(){
-        ArrayList<Integer> notesList = MainActivity.getRawResourcesIds(this);
-
-        Random random = new Random();
-        int index = random.nextInt(notesList.size());
-        if (index >= notesList.size() - (chordType.ordinal() + 1) * 2)
-            index -= (chordType.ordinal() + 1) * 2;
-
-        int resId = notesList.get(index);
-
-        for(int i = 0; i < 3; i++, resId += (chordType.ordinal() + 1)){
-            MediaPlayer mp = MediaPlayer.create(getApplicationContext(), resId);
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.reset();
-                    mp.release();
-                    mp = null;
-                }
-            });
-        }
-
     }
 }
