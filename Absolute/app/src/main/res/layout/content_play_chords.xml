@@ -10,7 +10,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.user1.absolute.PlayChordsActivity"
-    tools:showIn="@layout/activity_play_chords">
+    tools:showIn="@layout/activity_play_chords"
+    android:background="@color/colorPrimary">
 
 
     <Button
@@ -23,7 +24,8 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="32dp" />
+        android:layout_marginTop="32dp"
+        android:background="@drawable/buttons_primary"/>
 
     <Button
         android:id="@+id/augmentedBtn"
@@ -34,7 +36,8 @@
         android:textSize="25sp"
         android:layout_above="@+id/minorBtn"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/buttons_primary" />
 
     <Button
         android:id="@+id/majorBtn"
@@ -46,7 +49,8 @@
         android:textSize="25sp"
         android:layout_alignTop="@+id/minorBtn"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:background="@drawable/buttons_primary" />
 
     <Button
         android:id="@+id/minorBtn"
@@ -58,7 +62,8 @@
         android:layout_marginTop="31dp"
         android:layout_below="@+id/diminishedBtn"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/buttons_primary" />
 
 
 </RelativeLayout>
