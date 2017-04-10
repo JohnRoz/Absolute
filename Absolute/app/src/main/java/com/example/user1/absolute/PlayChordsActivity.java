@@ -38,7 +38,7 @@ public class PlayChordsActivity extends AppCompatActivity {
     Context context;
     boolean didUserAnswerCorrectly = true;
 
-    int resId;
+    Integer resId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +48,14 @@ public class PlayChordsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
 
-        final ArrayList<Integer> notesList = MainActivity.getRawResourcesIds(this);
-        context = PlayChordsActivity.this;
+        final ArrayList<Integer> notesList = MainActivity.getNotesList(this);
+        notesList.remove(Integer.valueOf(R.raw.wrong_sound));//REMOVING the 'wrong_sound' effect from the notes list.
+        //notesList.remove(Integer.valueOf(R.raw.correct_sound));//REMOVING the 'correct_sound' effect from the notes list.
+        // TODO: that ^^^ (Add a 'correct_sound' to the resources and remove it from the notesList.)
+        //TODO: btw, you can then refactor these 2 lines above to a public static method (in MainActivity)
+        //TODO:  called getNotesList(), that does this filtering for you.
 
+        context = PlayChordsActivity.this;
 
         initPlayButton(notesList);
 
@@ -275,9 +280,10 @@ public class PlayChordsActivity extends AppCompatActivity {
 
     /**
      * This method is called if the user wants to hear again the *MAJOR* chord he heard when he pressed the Play Button.
+     *
      * @param resId The ID of the resource that contains the root note of the chord.
      */
-    private void replayMajorChordById(int resId){
+    private void replayMajorChordById(int resId) {
         MediaPlayer mpNote1 = MediaPlayer.create(getApplicationContext(), resId);
         MediaPlayer mpNote2 = MediaPlayer.create(getApplicationContext(), resId + 4);// major terza
         MediaPlayer mpNote3 = MediaPlayer.create(getApplicationContext(), resId + 7);
@@ -291,9 +297,10 @@ public class PlayChordsActivity extends AppCompatActivity {
 
     /**
      * This method is called if the user wants to hear again the *MINOR* chord he heard when he pressed the Play Button.
+     *
      * @param resId The ID of the resource that contains the root note of the chord.
      */
-    private void replayMinorChordById(int resId){
+    private void replayMinorChordById(int resId) {
         MediaPlayer mpNote1 = MediaPlayer.create(getApplicationContext(), resId);
         MediaPlayer mpNote2 = MediaPlayer.create(getApplicationContext(), resId + 3);// minor terza
         MediaPlayer mpNote3 = MediaPlayer.create(getApplicationContext(), resId + 7);
@@ -308,9 +315,10 @@ public class PlayChordsActivity extends AppCompatActivity {
     /**
      * This method is called if the user wants to hear again the *DIMINISHED/AUGMENTED* chord he heard
      * when he pressed the Play Button.
+     *
      * @param resId The ID of the resource that contains the root note of the chord.
      */
-    private void replayDimORAugChordById(int resId){
+    private void replayDimORAugChordById(int resId) {
         MediaPlayer mpNote1 = MediaPlayer.create(getApplicationContext(), resId);
         MediaPlayer mpNote2 = MediaPlayer.create(getApplicationContext(), resId + (chordType.ordinal() + 1));
         MediaPlayer mpNote3 = MediaPlayer.create(getApplicationContext(), resId + (chordType.ordinal() + 1) * 2);
@@ -325,28 +333,32 @@ public class PlayChordsActivity extends AppCompatActivity {
     /**
      * This method replays the chord that was played
      */
-    private void initReplayButton(){
+    private void initReplayButton() {
 
         replayNotesFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (chordType) {
-                    case Major:
-                        replayMajorChordById(resId);
-                        break;
-                    case Minor:
-                        replayMinorChordById(resId);
-                        break;
-                    default://PAY ATTENTION! If you get Dim/Aug chords **ALL THE TIME**, then this is probably the problem!
-                        replayDimORAugChordById(resId);
-                        break;
-                }
+                if (resId != null)
+                    switch (chordType) {
+                        case Major:
+                            replayMajorChordById(resId);
+                            break;
+                        case Minor:
+                            replayMinorChordById(resId);
+                            break;
+                        default://PAY ATTENTION! If you get Dim/Aug chords **ALL THE TIME**, then this is probably the problem!
+                            replayDimORAugChordById(resId);
+                            break;
+                    }
+                else
+                    Toast.makeText(context, "You have to play something first in order to replay it.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     /**
      * This method initiates the clickListener of the playNotesFab Button.
+     *
      * @param notesList The list of the notes from which the app takes a random note to play.
      */
     private void initPlayButton(final ArrayList<Integer> notesList) {

@@ -26,10 +26,8 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 
-    //public ArrayList<Integer> ResourcesIds = getRawResourcesIds();
-
-    @BindView(R.id.playChordsBtn)
-    Button playChordsBtn;
+    @BindView(R.id.trainChordsBtn)
+    Button trainChordsBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +37,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);//ButterKnife is awesome!
 
-        //fabsOnClick();
-
-
-        playChordsBtn.setOnClickListener(new View.OnClickListener() {
+        trainChordsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent playChordsIntent = new Intent(MainActivity.this, PlayChordsActivity.class);
@@ -51,53 +46,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-/*
-    private void fabsOnClick() {
-        FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.fab);
-        fab2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for (int i = 0; i < 11; i++) {
-                    Random random = new Random();
-                    int index = random.nextInt(getRawResourcesIds().size());
-                    int resId = getRawResourcesIds().get(index);
-                    MediaPlayer mp = MediaPlayer.create(getApplicationContext(), resId);
-                    mp.start();
-                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-                            mp.release();
-                            mp = null;
-                        }
-                    });
-                }
-            }
-        });
-        */
-
-/*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-
-                Random random = new Random();
-                int index = random.nextInt(getRawResourcesIds().size());
-                int resId = getRawResourcesIds().get(index);
-                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), resId);
-                mp.start();
-                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        mp.release();
-                        mp = null;
-                    }
-                });
-            }
-        });
-    }
-    */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -155,7 +103,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     *
+     * This method gets the IDs of the resources from the 'raw' directory,
+     * using the sinner function {@link #getRawResourcesNames}().
      * @param context A Static method cannot use the getApplicationContext() method, so just insert a Context.
      * @return An ArrayList of the IDs of my raw resource files.
      */
@@ -166,6 +115,18 @@ public class MainActivity extends AppCompatActivity {
             IDs.add(id);
         }
         return IDs;
+    }
+
+    /**
+     * This method uses the ArrayList returned from {@link #getRawResourcesIds}()
+     * and filter out anything that is not a note sound file.
+     * @param context A Static method cannot use the getApplicationContext() method, so just insert a Context.
+     * @return An ArrayList of the IDs of the note sound files in the raw resource files.
+     */
+    public static ArrayList<Integer> getNotesList(Context context){
+        ArrayList<Integer> notesList = MainActivity.getRawResourcesIds(context);
+        //TODO: filter the wrong/correct sound effects.
+        return notesList;
     }
 
 }
