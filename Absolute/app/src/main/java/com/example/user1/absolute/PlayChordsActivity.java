@@ -199,7 +199,7 @@ public class PlayChordsActivity extends AppCompatActivity {
         Major,
         Minor,
         Diminished,
-        Augmented;
+        Augmented
     }
 
     /**
@@ -264,7 +264,8 @@ public class PlayChordsActivity extends AppCompatActivity {
      */
     private void stopChordIfPlaying(MediaPlayer chord) {
         if (chord != null) {
-            try {
+            try {//THIS THROWS IllegalStateException SOMETIMES FOR AN UNKNOWN REASON!
+                // TODO: FIND OUT WHY!
                 if (chord.isPlaying()) {
                     chord.stop();
                     chord.release();
