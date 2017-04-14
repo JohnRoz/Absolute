@@ -57,10 +57,7 @@ public class PlayChordsActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         final ArrayList<Integer> notesList = MainActivity.getNotesList(this);
-
-        //TODO: btw, you can then refactor these 2 lines above to a public static method (in MainActivity)
-        //TODO:  called getNotesList(), that does this filtering for you.
-
+        
         context = PlayChordsActivity.this;
 
         wrongAnswersCounter = 0;
