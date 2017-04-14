@@ -8,8 +8,10 @@ import android.os.Vibrator;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -32,6 +34,12 @@ public class PlayChordsActivity extends AppCompatActivity {
     FloatingActionButton playNotesFab;
     @BindView(R.id.replayNotesFab)
     FloatingActionButton replayNotesFab;
+    @BindView(R.id.chordsStrikeOne)
+    ImageView strike1;
+    @BindView(R.id.chordsStrikeTwo)
+    ImageView strike2;
+    @BindView(R.id.chordsStrikeThree)
+    ImageView strike3;
 
     ChordType chordType;
     int wrongAnswersCounter;//TODO: <== This
@@ -49,13 +57,13 @@ public class PlayChordsActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         final ArrayList<Integer> notesList = MainActivity.getNotesList(this);
-        notesList.remove(Integer.valueOf(R.raw.wrong_sound));//REMOVING the 'wrong_sound' effect from the notes list.
-        //notesList.remove(Integer.valueOf(R.raw.correct_sound));//REMOVING the 'correct_sound' effect from the notes list.
-        // TODO: that ^^^ (Add a 'correct_sound' to the resources and remove it from the notesList.)
+
         //TODO: btw, you can then refactor these 2 lines above to a public static method (in MainActivity)
         //TODO:  called getNotesList(), that does this filtering for you.
 
         context = PlayChordsActivity.this;
+
+        wrongAnswersCounter = 0;
 
         initPlayButton(notesList);
 
@@ -73,8 +81,11 @@ public class PlayChordsActivity extends AppCompatActivity {
                 if (chordType == ChordType.Major) {
                     playCorrectSoundEffect(majorBtn, context);
                     releasePlayBtnFromFreeze();
-                } else
+                } else {
                     playWrongSoundEffect(majorBtn, context);
+                    wrongAnswersCounter++;
+                    changeLifeIcons();
+                }
             }
         });
 
@@ -84,8 +95,11 @@ public class PlayChordsActivity extends AppCompatActivity {
                 if (chordType == ChordType.Minor) {
                     playCorrectSoundEffect(minorBtn, context);
                     releasePlayBtnFromFreeze();
-                } else
+                } else {
                     playWrongSoundEffect(minorBtn, context);
+                    wrongAnswersCounter++;
+                    changeLifeIcons();
+                }
             }
         });
 
@@ -95,8 +109,11 @@ public class PlayChordsActivity extends AppCompatActivity {
                 if (chordType == ChordType.Diminished) {
                     playCorrectSoundEffect(diminishedBtn, context);
                     releasePlayBtnFromFreeze();
-                } else
+                } else {
                     playWrongSoundEffect(diminishedBtn, context);
+                    wrongAnswersCounter++;
+                    changeLifeIcons();
+                }
             }
         });
 
@@ -106,8 +123,11 @@ public class PlayChordsActivity extends AppCompatActivity {
                 if (chordType == ChordType.Augmented) {
                     playCorrectSoundEffect(augmentedBtn, context);
                     releasePlayBtnFromFreeze();
-                } else
+                } else {
                     playWrongSoundEffect(augmentedBtn, context);
+                    wrongAnswersCounter++;
+                    changeLifeIcons();
+                }
             }
         });
     }
@@ -166,23 +186,14 @@ public class PlayChordsActivity extends AppCompatActivity {
         Random random = new Random();
         int index = random.nextInt(notesList.size());
 
-        // 7 semitones is the distance between the first note of the chord and the last one in a Major/Minor chord
+        // 7 semitones is the distance between the first note of the chord and the last one in a Major/Minor chord.
         // This is to prevent an indexOutOfBoundsException.
         // (If i don't do this, the MediaPlayer could try to access resources that don't exist.)
         if (index >= notesList.size() - 7)
             index -= 7;
 
         this.resId = notesList.get(index);
-        MediaPlayer mpNote1 = MediaPlayer.create(getApplicationContext(), resId);
-        MediaPlayer mpNote2 = MediaPlayer.create(getApplicationContext(), resId + 4);// major terza
-        MediaPlayer mpNote3 = MediaPlayer.create(getApplicationContext(), resId + 7);
-
-        mpNote1.start();
-        mpNote2.start();
-        mpNote3.start();
-
-        releaseTheMediaPlayers(mpNote1, mpNote2, mpNote3);
-
+        playMajorChordById(resId);
     }
 
     /**
@@ -202,15 +213,7 @@ public class PlayChordsActivity extends AppCompatActivity {
             index -= 7;
 
         this.resId = notesList.get(index);
-        MediaPlayer mpNote1 = MediaPlayer.create(getApplicationContext(), resId);
-        MediaPlayer mpNote2 = MediaPlayer.create(getApplicationContext(), resId + 3);// minor terza
-        MediaPlayer mpNote3 = MediaPlayer.create(getApplicationContext(), resId + 7);
-
-        mpNote1.start();
-        mpNote2.start();
-        mpNote3.start();
-
-        releaseTheMediaPlayers(mpNote1, mpNote2, mpNote3);
+        playMinorChordById(resId);
     }
 
     /**
@@ -225,16 +228,7 @@ public class PlayChordsActivity extends AppCompatActivity {
             index -= (chordType.ordinal() + 1) * 2;
 
         this.resId = notesList.get(index);
-        MediaPlayer mpNote1 = MediaPlayer.create(getApplicationContext(), resId);
-        MediaPlayer mpNote2 = MediaPlayer.create(getApplicationContext(), resId + (chordType.ordinal() + 1));
-        MediaPlayer mpNote3 = MediaPlayer.create(getApplicationContext(), resId + (chordType.ordinal() + 1) * 2);
-
-        mpNote1.start();
-        mpNote2.start();
-        mpNote3.start();
-
-        releaseTheMediaPlayers(mpNote1, mpNote2, mpNote3);
-
+        playDimORAugChordById(resId);
     }
 
     /**
@@ -283,14 +277,15 @@ public class PlayChordsActivity extends AppCompatActivity {
      *
      * @param resId The ID of the resource that contains the root note of the chord.
      */
-    private void replayMajorChordById(int resId) {
-        MediaPlayer mpNote1 = MediaPlayer.create(getApplicationContext(), resId);
-        MediaPlayer mpNote2 = MediaPlayer.create(getApplicationContext(), resId + 4);// major terza
-        MediaPlayer mpNote3 = MediaPlayer.create(getApplicationContext(), resId + 7);
+    private void playMajorChordById(int resId) {
+        MediaPlayer mpNote1 = MediaPlayer.create(context, resId);
+        MediaPlayer mpNote2 = MediaPlayer.create(context, resId + 4);// major terza
+        MediaPlayer mpNote3 = MediaPlayer.create(context, resId + 7);
 
         mpNote1.start();
         mpNote2.start();
         mpNote3.start();
+
 
         releaseTheMediaPlayers(mpNote1, mpNote2, mpNote3);
     }
@@ -300,14 +295,15 @@ public class PlayChordsActivity extends AppCompatActivity {
      *
      * @param resId The ID of the resource that contains the root note of the chord.
      */
-    private void replayMinorChordById(int resId) {
-        MediaPlayer mpNote1 = MediaPlayer.create(getApplicationContext(), resId);
-        MediaPlayer mpNote2 = MediaPlayer.create(getApplicationContext(), resId + 3);// minor terza
-        MediaPlayer mpNote3 = MediaPlayer.create(getApplicationContext(), resId + 7);
+    private void playMinorChordById(int resId) {
+        MediaPlayer mpNote1 = MediaPlayer.create(context, resId);
+        MediaPlayer mpNote2 = MediaPlayer.create(context, resId + 3);// minor terza
+        MediaPlayer mpNote3 = MediaPlayer.create(context, resId + 7);
 
         mpNote1.start();
         mpNote2.start();
         mpNote3.start();
+
 
         releaseTheMediaPlayers(mpNote1, mpNote2, mpNote3);
     }
@@ -318,14 +314,16 @@ public class PlayChordsActivity extends AppCompatActivity {
      *
      * @param resId The ID of the resource that contains the root note of the chord.
      */
-    private void replayDimORAugChordById(int resId) {
-        MediaPlayer mpNote1 = MediaPlayer.create(getApplicationContext(), resId);
-        MediaPlayer mpNote2 = MediaPlayer.create(getApplicationContext(), resId + (chordType.ordinal() + 1));
-        MediaPlayer mpNote3 = MediaPlayer.create(getApplicationContext(), resId + (chordType.ordinal() + 1) * 2);
+    private void playDimORAugChordById(int resId) {
+        MediaPlayer mpNote1 = MediaPlayer.create(context, resId);
+        MediaPlayer mpNote2 = MediaPlayer.create(context, resId + (chordType.ordinal() + 1));
+        MediaPlayer mpNote3 = MediaPlayer.create(context, resId + (chordType.ordinal() + 1) * 2);
 
-        mpNote1.start();
-        mpNote2.start();
-        mpNote3.start();
+            mpNote1.start();
+            mpNote2.start();
+            mpNote3.start();
+
+
 
         releaseTheMediaPlayers(mpNote1, mpNote2, mpNote3);
     }
@@ -341,13 +339,13 @@ public class PlayChordsActivity extends AppCompatActivity {
                 if (resId != null)
                     switch (chordType) {
                         case Major:
-                            replayMajorChordById(resId);
+                            playMajorChordById(resId);
                             break;
                         case Minor:
-                            replayMinorChordById(resId);
+                            playMinorChordById(resId);
                             break;
                         default://PAY ATTENTION! If you get Dim/Aug chords **ALL THE TIME**, then this is probably the problem!
-                            replayDimORAugChordById(resId);
+                            playDimORAugChordById(resId);
                             break;
                     }
                 else
@@ -378,12 +376,30 @@ public class PlayChordsActivity extends AppCompatActivity {
     }
 
     /**
+     * This method changes the life icons of the player to X'es when he gives the wrong answer.
+     */
+    private void changeLifeIcons() {
+        switch (wrongAnswersCounter) {
+            case 1:
+                strike1.setImageResource(R.drawable.x_icon);
+                break;
+            case 2:
+                strike2.setImageResource(R.drawable.x_icon);
+                break;
+            case 3:
+                strike3.setImageResource(R.drawable.x_icon);
+                //TODO: GAME OVER!
+                break;
+        }
+    }
+
+    /**
      * Plays a "Correct" sound effect whenever the user gives a correct answer.
      * This method also turns the button green while the sound effect is playing.
      */
     public static void playCorrectSoundEffect(final Button btn, final Context context) {
         btn.setBackgroundColor(Color.GREEN);
-        final MediaPlayer player = MediaPlayer.create(context, R.raw.piano64_c_oct6);
+        final MediaPlayer player = MediaPlayer.create(context, R.raw.piano_note_64_c_oct6);
         //TODO: ADD *REAL* 'CORRECT' SOUND ^^^^^
         player.start();
         player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {

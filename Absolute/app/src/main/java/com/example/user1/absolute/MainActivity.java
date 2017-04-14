@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
             //if the id of the resource isn't 0 (if it is it brings up problems)
             if (context.getResources().getIdentifier(resourceName, "raw", "com.example.user1.absolute") != 0)
-                //the loop adds each name of each of the resources of raw to an ArrayList
+                //the loop adds each name of each of the resource of raw to an ArrayList
                 rawResourcesNames.add(resourceName);
 
 
@@ -117,16 +117,31 @@ public class MainActivity extends AppCompatActivity {
         return IDs;
     }
 
+
     /**
-     * This method uses the ArrayList returned from {@link #getRawResourcesIds}()
-     * and filter out anything that is not a note sound file.
+     * This method creates an arraylist of IDs of the notes files ONLY. It filters all other files.
      * @param context A Static method cannot use the getApplicationContext() method, so just insert a Context.
-     * @return An ArrayList of the IDs of the note sound files in the raw resource files.
+     * @return An ArrayList of the IDs of the note sound files in the raw resources directory.
      */
     public static ArrayList<Integer> getNotesList(Context context){
-        ArrayList<Integer> notesList = MainActivity.getRawResourcesIds(context);
-        //TODO: filter the wrong/correct sound effects.
-        return notesList;
+        // Gets an arrayList of strings containing the names of all the notes resources.
+        ArrayList<String> allRawResourcesNames = getRawResourcesNames(context);
+        ArrayList<String> unwantedRawResourcesNames = new ArrayList<>();
+        for(String name : allRawResourcesNames)
+            if (!name.contains("_note_"))
+                unwantedRawResourcesNames.add(name);
+
+        allRawResourcesNames.removeAll(unwantedRawResourcesNames);
+
+        // The arrayList to be returned.
+        // This arrayList holds the IDs of all the notes resources
+        ArrayList<Integer> NotesList = new ArrayList<>();
+        for (String name : allRawResourcesNames) {
+            int id = context.getResources().getIdentifier(name, "raw", "com.example.user1.absolute");
+            NotesList.add(id);
+        }
+
+        return NotesList;
     }
 
 }

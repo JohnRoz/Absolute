@@ -14,18 +14,27 @@
     android:background="@color/colorPrimary">
 
 
-    <Button
-        android:id="@+id/diminishedBtn"
-        android:layout_width="155dp"
-        android:layout_height="155dp"
-        android:text="Diminished"
-        android:textAllCaps="false"
-        android:textSize="25sp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/buttons_primary"/>
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/heart_icon"
+        android:id="@+id/chordsStrikeOne"/>
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/heart_icon"
+        android:id="@+id/chordsStrikeTwo"
+        android:layout_toRightOf="@id/chordsStrikeOne"
+        android:layout_marginLeft="8dp"/>
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/heart_icon"
+        android:id="@+id/chordsStrikeThree"
+        android:layout_toRightOf="@id/chordsStrikeTwo"
+        android:layout_marginLeft="8dp"/>
 
     <Button
         android:id="@+id/augmentedBtn"
@@ -64,6 +73,19 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:background="@drawable/buttons_primary" />
+
+    <Button
+        android:id="@+id/diminishedBtn"
+        android:layout_width="155dp"
+        android:layout_height="155dp"
+        android:text="Diminished"
+        android:textAllCaps="false"
+        android:textSize="25sp"
+        android:background="@drawable/buttons_primary"
+        android:layout_below="@+id/chordsStrikeOne"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="2dp"/>
 
 
 </RelativeLayout>
