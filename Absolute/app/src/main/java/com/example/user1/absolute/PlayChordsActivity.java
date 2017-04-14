@@ -30,10 +30,10 @@ public class PlayChordsActivity extends AppCompatActivity {
     Button diminishedBtn;
     @BindView(R.id.augmentedBtn)
     Button augmentedBtn;
-    @BindView(R.id.playNotesFab)
-    FloatingActionButton playNotesFab;
-    @BindView(R.id.replayNotesFab)
-    FloatingActionButton replayNotesFab;
+    @BindView(R.id.playChordFab)
+    FloatingActionButton playChordFab;
+    @BindView(R.id.replayChordFab)
+    FloatingActionButton replayChordFab;
     @BindView(R.id.chordsStrikeOne)
     ImageView strike1;
     @BindView(R.id.chordsStrikeTwo)
@@ -42,11 +42,17 @@ public class PlayChordsActivity extends AppCompatActivity {
     ImageView strike3;
 
     ChordType chordType;
-    int wrongAnswersCounter;//TODO: <== This
+    int wrongAnswersCounter;
     Context context;
     boolean didUserAnswerCorrectly = true;
 
     Integer resId;
+    MediaPlayer chord;
+
+    ArrayList<Integer> augmentedChordsList;
+    ArrayList<Integer> diminishedChordsList;
+    ArrayList<Integer> majorChordsList;
+    ArrayList<Integer> minorChordsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,15 +62,54 @@ public class PlayChordsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
 
-        final ArrayList<Integer> notesList = MainActivity.getNotesList(this);
-        
+        augmentedChordsList = MainActivity.getRawResourcesListByType(this, "_aug_");
+        diminishedChordsList = MainActivity.getRawResourcesListByType(this, "_dim_");
+        majorChordsList = MainActivity.getRawResourcesListByType(this, "_maj_");
+        minorChordsList = MainActivity.getRawResourcesListByType(this, "_min_");
+
         context = PlayChordsActivity.this;
 
         wrongAnswersCounter = 0;
 
-        initPlayButton(notesList);
+        initPlayButton();
 
         initReplayButton();
+    }
+
+
+    /**
+     * This method replays the chord that was played.
+     */
+    private void initReplayButton() {
+
+        replayChordFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (resId != null)
+                    playChord();
+                else
+                    Toast.makeText(context, "You have to play something first in order to replay it.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /**
+     * This method initiates the clickListener of the playChordFab Button.
+     */
+    private void initPlayButton() {
+        playChordFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (didUserAnswerCorrectly) {
+                    chordType = setChordType();
+                    playRandomChord(chordType);
+                    didUserAnswerCorrectly = false;
+                    playChordFab.setAlpha(0.5f);
+                    initiateCheckAnswers();
+                } else
+                    Toast.makeText(context, "You have to answer correctly first.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**
@@ -75,7 +120,8 @@ public class PlayChordsActivity extends AppCompatActivity {
         majorBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (chordType == ChordType.Major) {
+                stopChordIfPlaying(chord);
+                if (chordType.equals(ChordType.Major)) {
                     playCorrectSoundEffect(majorBtn, context);
                     releasePlayBtnFromFreeze();
                 } else {
@@ -89,7 +135,8 @@ public class PlayChordsActivity extends AppCompatActivity {
         minorBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (chordType == ChordType.Minor) {
+                stopChordIfPlaying(chord);
+                if (chordType.equals(ChordType.Minor)) {
                     playCorrectSoundEffect(minorBtn, context);
                     releasePlayBtnFromFreeze();
                 } else {
@@ -103,7 +150,8 @@ public class PlayChordsActivity extends AppCompatActivity {
         diminishedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (chordType == ChordType.Diminished) {
+                stopChordIfPlaying(chord);
+                if (chordType.equals(ChordType.Diminished)) {
                     playCorrectSoundEffect(diminishedBtn, context);
                     releasePlayBtnFromFreeze();
                 } else {
@@ -117,7 +165,8 @@ public class PlayChordsActivity extends AppCompatActivity {
         augmentedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (chordType == ChordType.Augmented) {
+                stopChordIfPlaying(chord);
+                if (chordType.equals(ChordType.Augmented)) {
                     playCorrectSoundEffect(augmentedBtn, context);
                     releasePlayBtnFromFreeze();
                 } else {
@@ -154,111 +203,81 @@ public class PlayChordsActivity extends AppCompatActivity {
     }
 
     /**
-     * This method is in charge of activating the right 'playRandom...Chord()' methods according to the ChordType it gets as a parameter.
+     * This method is in charge of activating the method that sets a new random resId value, and then to play the chord chosen.
      *
-     * @param notesList An ArrayList of the resource IDs of the raw audio files.
      * @param chordType The type of the chord that should be played: Major, Minor, Diminished or Augmented.
      */
-    private void playChord(ArrayList<Integer> notesList, ChordType chordType) {
+    private void playRandomChord(ChordType chordType) {
         switch (chordType) {
             case Major:
-                playRandomMajorChord(notesList);
+                setRandomResIdFromList(majorChordsList);
                 break;
             case Minor:
-                playRandomMinorChord(notesList);
+                setRandomResIdFromList(minorChordsList);
                 break;
-            default://PAY ATTENTION! If you get Dim/Aug chords **ALL THE TIME**, then this is probably the problem!
-                playRandomDimORAugChord(notesList);
+            case Diminished:
+                setRandomResIdFromList(diminishedChordsList);
+                break;
+            case Augmented:
+                setRandomResIdFromList(augmentedChordsList);
                 break;
         }
+        playChord();
     }
 
     /**
-     * This method is in charge of activating 3 MediaPlayers simultaneously, in order to create a Major chord.
+     * This method gets an ArrayList of Integers that represent resource IDs.
+     * The method chooses one of those resource IDs randomly, and saves it into the global variable 'resId'.
      *
-     * @param notesList An ArrayList of the resource IDs of the raw audio files.
+     * @param chords The ArrayList containing the resource IDs
      */
-    private void playRandomMajorChord(ArrayList<Integer> notesList) {
-
+    private void setRandomResIdFromList(ArrayList<Integer> chords) {
         Random random = new Random();
-        int index = random.nextInt(notesList.size());
-
-        // 7 semitones is the distance between the first note of the chord and the last one in a Major/Minor chord.
-        // This is to prevent an indexOutOfBoundsException.
-        // (If i don't do this, the MediaPlayer could try to access resources that don't exist.)
-        if (index >= notesList.size() - 7)
-            index -= 7;
-
-        this.resId = notesList.get(index);
-        playMajorChordById(resId);
+        int index = random.nextInt(chords.size());
+        this.resId = chords.get(index);
     }
 
     /**
-     * This method is in charge of activating 3 MediaPlayers simultaneously, in order to create a Minor chord.
-     *
-     * @param notesList An ArrayList of the resource IDs of the raw audio files.
+     * This method is in charge of playing the chord that is represented by the global variable 'resId'.
      */
-    private void playRandomMinorChord(ArrayList<Integer> notesList) {
+    private void playChord() {
 
-        Random random = new Random();
+        // Play chosen chord
+        chord = MediaPlayer.create(context, resId);
+        chord.start();
 
-        // 7 semitones is the distance between the first note of the chord and the last one in a Major/Minor chord.
-        // This is to prevent an indexOutOfBoundsException.
-        // (If i don't do this, the MediaPlayer could try to access resources that don't exist.)
-        int index = random.nextInt(notesList.size());
-        if (index >= notesList.size() - 7)
-            index -= 7;
-
-        this.resId = notesList.get(index);
-        playMinorChordById(resId);
-    }
-
-    /**
-     * This method is in charge of activating 3 MediaPlayers simultaneously, in order to create a Diminished chord, or an augmented chord, depends on the chordType that was chosen randomly.
-     *
-     * @param notesList An ArrayList of the resource IDs of the raw audio files.
-     */
-    private void playRandomDimORAugChord(ArrayList<Integer> notesList) {
-        Random random = new Random();
-        int index = random.nextInt(notesList.size());
-        if (index >= notesList.size() - (chordType.ordinal() + 1) * 2)
-            index -= (chordType.ordinal() + 1) * 2;
-
-        this.resId = notesList.get(index);
-        playDimORAugChordById(resId);
-    }
-
-    /**
-     * This method is responsible of releasing system resources, particularly the MediaPlayers, who should be released after usage.
-     *
-     * @param mpNote1 The first MediaPlayer to release.
-     * @param mpNote2 The second MediaPlayer to release.
-     * @param mpNote3 The third MediaPlayer to release.
-     */
-    private void releaseTheMediaPlayers(MediaPlayer mpNote1, MediaPlayer mpNote2, MediaPlayer mpNote3) {
-        mpNote1.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+        // When done playing, release the MediaPlayer.
+        chord.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 mp.release();
                 mp = null;
+                chord = null;
             }
         });
+    }
 
-        mpNote2.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                mp.release();
-                mp = null;
+    /**
+     * This method runs when the user gives the answer before the track of the chord ended.
+     * This method stops the chord from playing, and releases the mediaPlayer.
+     * @param chord The MediaPlayer that plays the chord.
+     */
+    private void stopChordIfPlaying(MediaPlayer chord) {
+        if (chord != null) {
+            try {
+                if (chord.isPlaying()) {
+                    chord.stop();
+                    chord.release();
+                    chord = null;
+                }
             }
-        });
-
-        mpNote3.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                mp.release();
-                mp = null;
+            catch(IllegalStateException ex)
+            {
+                //Toast.makeText(context, "SOMETHING WENT WRONG", Toast.LENGTH_SHORT).show();
+                ex.printStackTrace();
+                Log.d("EXCEPTION", "stopChordIfPlaying: " + "SOMETHING WENT WRONG");
             }
-        });
+        }
     }
 
     /**
@@ -266,110 +285,7 @@ public class PlayChordsActivity extends AppCompatActivity {
      */
     private void releasePlayBtnFromFreeze() {
         didUserAnswerCorrectly = true;
-        playNotesFab.setAlpha(1f);
-    }
-
-    /**
-     * This method is called if the user wants to hear again the *MAJOR* chord he heard when he pressed the Play Button.
-     *
-     * @param resId The ID of the resource that contains the root note of the chord.
-     */
-    private void playMajorChordById(int resId) {
-        MediaPlayer mpNote1 = MediaPlayer.create(context, resId);
-        MediaPlayer mpNote2 = MediaPlayer.create(context, resId + 4);// major terza
-        MediaPlayer mpNote3 = MediaPlayer.create(context, resId + 7);
-
-        mpNote1.start();
-        mpNote2.start();
-        mpNote3.start();
-
-
-        releaseTheMediaPlayers(mpNote1, mpNote2, mpNote3);
-    }
-
-    /**
-     * This method is called if the user wants to hear again the *MINOR* chord he heard when he pressed the Play Button.
-     *
-     * @param resId The ID of the resource that contains the root note of the chord.
-     */
-    private void playMinorChordById(int resId) {
-        MediaPlayer mpNote1 = MediaPlayer.create(context, resId);
-        MediaPlayer mpNote2 = MediaPlayer.create(context, resId + 3);// minor terza
-        MediaPlayer mpNote3 = MediaPlayer.create(context, resId + 7);
-
-        mpNote1.start();
-        mpNote2.start();
-        mpNote3.start();
-
-
-        releaseTheMediaPlayers(mpNote1, mpNote2, mpNote3);
-    }
-
-    /**
-     * This method is called if the user wants to hear again the *DIMINISHED/AUGMENTED* chord he heard
-     * when he pressed the Play Button.
-     *
-     * @param resId The ID of the resource that contains the root note of the chord.
-     */
-    private void playDimORAugChordById(int resId) {
-        MediaPlayer mpNote1 = MediaPlayer.create(context, resId);
-        MediaPlayer mpNote2 = MediaPlayer.create(context, resId + (chordType.ordinal() + 1));
-        MediaPlayer mpNote3 = MediaPlayer.create(context, resId + (chordType.ordinal() + 1) * 2);
-
-            mpNote1.start();
-            mpNote2.start();
-            mpNote3.start();
-
-
-
-        releaseTheMediaPlayers(mpNote1, mpNote2, mpNote3);
-    }
-
-    /**
-     * This method replays the chord that was played
-     */
-    private void initReplayButton() {
-
-        replayNotesFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (resId != null)
-                    switch (chordType) {
-                        case Major:
-                            playMajorChordById(resId);
-                            break;
-                        case Minor:
-                            playMinorChordById(resId);
-                            break;
-                        default://PAY ATTENTION! If you get Dim/Aug chords **ALL THE TIME**, then this is probably the problem!
-                            playDimORAugChordById(resId);
-                            break;
-                    }
-                else
-                    Toast.makeText(context, "You have to play something first in order to replay it.", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    /**
-     * This method initiates the clickListener of the playNotesFab Button.
-     *
-     * @param notesList The list of the notes from which the app takes a random note to play.
-     */
-    private void initPlayButton(final ArrayList<Integer> notesList) {
-        playNotesFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (didUserAnswerCorrectly) {
-                    chordType = setChordType();
-                    playChord(notesList, chordType);
-                    didUserAnswerCorrectly = false;
-                    playNotesFab.setAlpha(0.5f);
-                    initiateCheckAnswers();
-                } else
-                    Toast.makeText(context, "You have to answer correctly first.", Toast.LENGTH_SHORT).show();
-            }
-        });
+        playChordFab.setAlpha(1f);
     }
 
     /**

@@ -144,4 +144,35 @@ public class MainActivity extends AppCompatActivity {
         return NotesList;
     }
 
+    /**
+     * This method creates an arrayList of IDs of the type of files inserted ONLY. It filters all other files.
+     * @param context A Static method cannot use the getApplicationContext() method, so just insert a Context.
+     * @param type A string of the form "_A_" where A is the type of raw resource files wanted.
+     * @return An ArrayList of the IDs of the augmented chords sound files in the raw resources directory.
+     */
+    public static ArrayList<Integer> getRawResourcesListByType(Context context, String type){
+        // Gets an arrayList of strings containing the names of all the raw resources.
+        ArrayList<String> allRawResourcesNames = getRawResourcesNames(context);
+        ArrayList<String> unwantedRawResourcesNames = new ArrayList<>();
+        for(String name : allRawResourcesNames)
+            if (!name.contains(type))
+                unwantedRawResourcesNames.add(name);
+
+        // Filtering any raw resource that is not an augmented chord
+        allRawResourcesNames.removeAll(unwantedRawResourcesNames);
+
+        // The arrayList to be returned.
+        // This arrayList holds the IDs of all the notes resources
+        ArrayList<Integer> augmentedChordsList = new ArrayList<>();
+        for (String name : allRawResourcesNames) {
+            int id = context.getResources().getIdentifier(name, "raw", "com.example.user1.absolute");
+            augmentedChordsList.add(id);
+        }
+
+        return augmentedChordsList;
+    }
+
+
+
+
 }

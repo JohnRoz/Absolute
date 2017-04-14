@@ -24,7 +24,7 @@
     <include layout="@layout/content_play_chords" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/playNotesFab"
+        android:id="@+id/playChordFab"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="bottom|right"
@@ -32,7 +32,7 @@
         app:srcCompat="@android:drawable/ic_media_play" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/replayNotesFab"
+        android:id="@+id/replayChordFab"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="bottom|left"
