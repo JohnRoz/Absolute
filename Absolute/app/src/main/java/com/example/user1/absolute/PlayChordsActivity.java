@@ -1,17 +1,22 @@
 package com.example.user1.absolute;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -40,11 +45,16 @@ public class PlayChordsActivity extends AppCompatActivity {
     ImageView strike2;
     @BindView(R.id.chordsStrikeThree)
     ImageView strike3;
+    @BindView(R.id.Score)
+    TextView textViewScore;
+    @BindView(R.id.quitBtn)
+    Button quitBtn;
 
     ChordType chordType;
     int wrongAnswersCounter;
     Context context;
     boolean didUserAnswerCorrectly = true;
+    int score;
 
     Integer resId;
     MediaPlayer chord;
@@ -70,10 +80,14 @@ public class PlayChordsActivity extends AppCompatActivity {
         context = PlayChordsActivity.this;
 
         wrongAnswersCounter = 0;
+        score = 0;
 
         initPlayButton();
 
         initReplayButton();
+
+        initQuitButton();
+
     }
 
 
@@ -105,9 +119,18 @@ public class PlayChordsActivity extends AppCompatActivity {
                     playRandomChord(chordType);
                     didUserAnswerCorrectly = false;
                     playChordFab.setAlpha(0.5f);
-                    initiateCheckAnswers();
+                    initCheckAnswers();
                 } else
                     Toast.makeText(context, "You have to answer correctly first.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void initQuitButton(){
+        quitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gameOver();
             }
         });
     }
@@ -115,7 +138,7 @@ public class PlayChordsActivity extends AppCompatActivity {
     /**
      * This method is responsible of the clickListeners of the answer buttons in this activity.
      */
-    private void initiateCheckAnswers() {
+    private void initCheckAnswers() {
 
         majorBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,6 +147,7 @@ public class PlayChordsActivity extends AppCompatActivity {
                 if (chordType.equals(ChordType.Major)) {
                     playCorrectSoundEffect(majorBtn, context);
                     releasePlayBtnFromFreeze();
+                    gainScore();
                 } else {
                     playWrongSoundEffect(majorBtn, context);
                     wrongAnswersCounter++;
@@ -139,6 +163,7 @@ public class PlayChordsActivity extends AppCompatActivity {
                 if (chordType.equals(ChordType.Minor)) {
                     playCorrectSoundEffect(minorBtn, context);
                     releasePlayBtnFromFreeze();
+                    gainScore();
                 } else {
                     playWrongSoundEffect(minorBtn, context);
                     wrongAnswersCounter++;
@@ -154,6 +179,7 @@ public class PlayChordsActivity extends AppCompatActivity {
                 if (chordType.equals(ChordType.Diminished)) {
                     playCorrectSoundEffect(diminishedBtn, context);
                     releasePlayBtnFromFreeze();
+                    gainScore();
                 } else {
                     playWrongSoundEffect(diminishedBtn, context);
                     wrongAnswersCounter++;
@@ -169,6 +195,7 @@ public class PlayChordsActivity extends AppCompatActivity {
                 if (chordType.equals(ChordType.Augmented)) {
                     playCorrectSoundEffect(augmentedBtn, context);
                     releasePlayBtnFromFreeze();
+                    gainScore();
                 } else {
                     playWrongSoundEffect(augmentedBtn, context);
                     wrongAnswersCounter++;
@@ -260,6 +287,7 @@ public class PlayChordsActivity extends AppCompatActivity {
     /**
      * This method runs when the user gives the answer before the track of the chord ended.
      * This method stops the chord from playing, and releases the mediaPlayer.
+     *
      * @param chord The MediaPlayer that plays the chord.
      */
     private void stopChordIfPlaying(MediaPlayer chord) {
@@ -271,9 +299,7 @@ public class PlayChordsActivity extends AppCompatActivity {
                     chord.release();
                     chord = null;
                 }
-            }
-            catch(IllegalStateException ex)
-            {
+            } catch (IllegalStateException ex) {
                 //Toast.makeText(context, "SOMETHING WENT WRONG", Toast.LENGTH_SHORT).show();
                 ex.printStackTrace();
                 Log.d("EXCEPTION", "stopChordIfPlaying: " + "SOMETHING WENT WRONG");
@@ -302,9 +328,36 @@ public class PlayChordsActivity extends AppCompatActivity {
                 break;
             case 3:
                 strike3.setImageResource(R.drawable.x_icon);
-                //TODO: GAME OVER!
+                gameOver();
                 break;
         }
+    }
+
+    /**
+     * This method gives the user points for choosing the right answer.
+     */
+    private void gainScore() {
+        score += 5;
+        textViewScore.setText("Score: +" + score);
+    }
+
+    private void gameOver(){
+        new AlertDialog.Builder(context)
+                .setTitle("GAME OVER!")
+                .setMessage("Would you like to save your score?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // TODO: SAVE SCORE
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(PlayChordsActivity.this , MainActivity.class);
+                        startActivity(intent);
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
 
     /**
