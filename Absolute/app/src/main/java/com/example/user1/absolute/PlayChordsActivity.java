@@ -1,10 +1,14 @@
 package com.example.user1.absolute;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.design.widget.FloatingActionButton;
@@ -12,9 +16,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,6 +69,8 @@ public class PlayChordsActivity extends AppCompatActivity {
     ArrayList<Integer> diminishedChordsList;
     ArrayList<Integer> majorChordsList;
     ArrayList<Integer> minorChordsList;
+
+    private String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -348,6 +356,8 @@ public class PlayChordsActivity extends AppCompatActivity {
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // TODO: SAVE SCORE
+                        saveScoreAlertDialog();
+
                     }
                 })
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -356,8 +366,36 @@ public class PlayChordsActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 })
-                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setIcon(android.R.drawable.ic_dialog_info)
                 .show();
+    }
+
+    private void saveScoreAlertDialog(){
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        // Set up the input
+        final EditText input = new EditText(context);
+        // Specify the type of input expected;
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        builder.setTitle("Enter Your Name!")
+                .setNeutralButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        userName = input.getText().toString();
+                        Intent intent = new Intent (PlayChordsActivity.this , HighScoresActivity.class);
+                        intent.putExtra("USERNAME", userName);
+                        intent.putExtra("SCORE", score);
+                        startActivity(intent);
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .show();
+
+
     }
 
     /**

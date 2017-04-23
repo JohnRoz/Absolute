@@ -7,4 +7,5 @@
     <string name="title_activity_play_notes">PlayNotesActivity</string>
     <string name="title_activity_sign_up">SignUpActivity</string>
     <string name="title_activity_play_chords">PlayChordsActivity</string>
+    <string name="title_activity_high_scores">HighScoresActivity</string>
 </resources>
