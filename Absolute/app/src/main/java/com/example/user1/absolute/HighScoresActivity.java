@@ -18,18 +18,24 @@ import android.widget.ListView;
 //CONSTANTS:
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+import static com.example.user1.absolute.MainActivity.ACTION_SAVE;
 import static com.example.user1.absolute.ScoresDatabaseContract.ScoresConstants.COLUMN_NAME_POINTS;
 import static com.example.user1.absolute.ScoresDatabaseContract.ScoresConstants.COLUMN_NAME_USERS;
 import static com.example.user1.absolute.ScoresDatabaseContract.ScoresConstants.TABLE_NAME;
 import static com.example.user1.absolute.ScoresDatabaseContract.ScoresConstants._ID;
 
-public class HighScoresActivity extends AppCompatActivity implements AsyncTaskCallbacks{
+public class HighScoresActivity extends AppCompatActivity implements AsyncTaskCallbacks {
+
+    @BindView(R.id.highScoresListView)
+    ListView listView;
 
     String username;
     int score;
     ArrayList<String> scores;
     ArrayAdapter<String> adapter;
-    ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,46 +43,48 @@ public class HighScoresActivity extends AppCompatActivity implements AsyncTaskCa
         setContentView(R.layout.activity_high_scores);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        ButterKnife.bind(this);
 
         final ScoresDbHelper dbHelper = new ScoresDbHelper(this);
 
         Intent intent = getIntent();
-        username = intent.getStringExtra("USERNAME");
-        score = intent.getIntExtra("SCORE", score);
-        saveScoreInDb(dbHelper, this, username, score);
+        String action = intent.getAction();
+        switch(action){
+            case ACTION_SAVE: saveInDb(dbHelper, intent);
+                break;
+        }
 
         scores = new ArrayList<String>();
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, scores);
+        listView.setAdapter(adapter);
+
         getScoresFromDb(dbHelper, new scoresCallback() {
             @Override
             public void returnScoresArrayList(ArrayList<String> scoresTable) {
-                scores = scoresTable;
-                adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, scores);
-                listView.setAdapter(adapter);
+                adapter.addAll(scoresTable);
 
-            }
-        });
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
             }
         });
     }
 
+    private void saveInDb(ScoresDbHelper dbHelper, Intent intent) {
+        username = intent.getStringExtra("USERNAME");
+        score = intent.getIntExtra("SCORE", score);
+        saveScoreInDb(dbHelper, this, username, score);
+    }
+
     /**
      * This method saves the Score a user got under his name. It also returns the ID column value of the player inserted.
+     *
      * @param dbHelper A helper object to get the Database.
-     * @param context The context of where this static method was called from.
+     * @param context  The context of where this static method was called from.
      * @param userName The name under which the score will be saved.
-     * @param points The score the player got in the game.
-     * @param c A callback method to run as soon as the INSERT command is finished.
+     * @param points   The score the player got in the game.
+     * @param c        A callback method to run as soon as the INSERT command is finished.
      */
-    public static void saveScoreInDb(final ScoresDbHelper dbHelper, Context context, final String userName, final int points, final AsyncTaskCallbacks.idCallback c){
+    public static void saveScoreInDb(final ScoresDbHelper dbHelper, Context context, final String userName, final int points, final AsyncTaskCallbacks.idCallback c) {
 
-        new AsyncTask<Void, Void, Integer>(){
+        new AsyncTask<Void, Void, Integer>() {
             @Override
             protected Integer doInBackground(Void... params) {
 
@@ -89,7 +97,7 @@ public class HighScoresActivity extends AppCompatActivity implements AsyncTaskCa
                 values.put(COLUMN_NAME_POINTS, points);
 
                 // Insert the new row, returning the primary key value of the new row
-                Integer newRowId = (int)db.insert(TABLE_NAME, null, values);
+                Integer newRowId = (int) db.insert(TABLE_NAME, null, values);
 
                 return newRowId;
             }
@@ -104,15 +112,16 @@ public class HighScoresActivity extends AppCompatActivity implements AsyncTaskCa
 
     /**
      * This method saves the Score a user got under his name.
+     *
      * @param dbHelper A helper object to get the Database.
-     * @param context The context of where this static method was called from.
+     * @param context  The context of where this static method was called from.
      * @param userName The name under which the score will be saved.
-     * @param points The score the player got in the game.
+     * @param points   The score the player got in the game.
      */
-    public static void saveScoreInDb(final ScoresDbHelper dbHelper, Context context, final String userName, final int points){
+    public static void saveScoreInDb(final ScoresDbHelper dbHelper, Context context, final String userName, final int points) {
 
 
-        new AsyncTask<Void, Void, Void>(){
+        new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
 
@@ -136,12 +145,13 @@ public class HighScoresActivity extends AppCompatActivity implements AsyncTaskCa
 
     /**
      * This method is to get the whole Scores table from the Database.
+     *
      * @param dbHelper A helper object to get the Database.
-     * @param c A callback method to run as soon as the SELECT command is finished.
+     * @param c        A callback method to run as soon as the SELECT command is finished.
      */
-    public static void getScoresFromDb(final ScoresDbHelper dbHelper, final AsyncTaskCallbacks.scoresCallback c){
+    public static void getScoresFromDb(final ScoresDbHelper dbHelper, final AsyncTaskCallbacks.scoresCallback c) {
 
-        new AsyncTask<Void, Void, ArrayList<String>>(){
+        new AsyncTask<Void, Void, ArrayList<String>>() {
             @Override
             protected ArrayList<String> doInBackground(Void... params) {
 
@@ -150,10 +160,10 @@ public class HighScoresActivity extends AppCompatActivity implements AsyncTaskCa
                 SQLiteDatabase db = dbHelper.getReadableDatabase();//THIS REQUIRES ASYNCTASK!!!
                 Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " ;", null);
 
-                if(cursor != null){
-                    while (cursor.moveToNext()){
+                if (cursor != null) {
+                    while (cursor.moveToNext()) {
                         String username = cursor.getString(1);
-                        int  points = cursor.getInt(2);
+                        int points = cursor.getInt(2);
 
                         scores.add(username + " - " + points);
                     }

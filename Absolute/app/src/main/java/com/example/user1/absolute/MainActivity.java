@@ -28,6 +28,12 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.trainChordsBtn)
     Button trainChordsBtn;
+    @BindView(R.id.highScores)
+    Button highScores;
+
+    final static String ACTION_SAVE = "SAVE";
+    final static String ACTION_GOTO = "GOTO";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +48,15 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent playChordsIntent = new Intent(MainActivity.this, PlayChordsActivity.class);
                 startActivity(playChordsIntent);
+            }
+        });
+
+        highScores.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent highScoresIntent = new Intent(MainActivity.this, HighScoresActivity.class);
+                highScoresIntent.setAction(ACTION_GOTO);
+                startActivity(highScoresIntent);
             }
         });
     }

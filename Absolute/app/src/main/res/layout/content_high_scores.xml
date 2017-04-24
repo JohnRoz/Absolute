@@ -13,4 +13,17 @@
     tools:context="com.example.user1.absolute.HighScoresActivity"
     tools:showIn="@layout/activity_high_scores">
 
+    <ListView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/highScoresListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:columnWidth="200dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="10dp"
+        android:horizontalSpacing="10dp"
+        android:stretchMode="columnWidth"
+        android:gravity="center"
+        />
+
 </RelativeLayout>

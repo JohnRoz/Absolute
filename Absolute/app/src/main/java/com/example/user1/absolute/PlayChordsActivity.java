@@ -31,6 +31,9 @@ import java.util.Random;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.example.user1.absolute.MainActivity.ACTION_GOTO;
+import static com.example.user1.absolute.MainActivity.ACTION_SAVE;
+
 public class PlayChordsActivity extends AppCompatActivity {
 
     @BindView(R.id.majorBtn)
@@ -363,6 +366,7 @@ public class PlayChordsActivity extends AppCompatActivity {
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(PlayChordsActivity.this , MainActivity.class);
+                        intent.setAction(ACTION_GOTO);
                         startActivity(intent);
                     }
                 })
@@ -389,6 +393,7 @@ public class PlayChordsActivity extends AppCompatActivity {
                         Intent intent = new Intent (PlayChordsActivity.this , HighScoresActivity.class);
                         intent.putExtra("USERNAME", userName);
                         intent.putExtra("SCORE", score);
+                        intent.setAction(ACTION_SAVE);
                         startActivity(intent);
                     }
                 })

@@ -21,36 +21,19 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:layout_width="0dp"
-        android:layout_height="48dp"
+        android:layout_width="384dp"
+        android:layout_height="51dp"
         android:background="@drawable/buttons_primary"
         android:id="@+id/highScores"
         android:text="High Scores"
         android:textSize="20sp"
         android:textColor="@color/buttonsTextColor"
-        tools:layout_constraintRight_creator="1"
-        app:layout_constraintRight_toRightOf="@+id/playIntervalsBtn"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="@+id/playIntervalsBtn"
         app:layout_constraintHorizontal_bias="1.0"
-        android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@+id/playIntervalsBtn" />
-
-    <Button
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:background="@drawable/buttons_primary"
-        android:id="@+id/playIntervalsBtn"
-        android:text="Interval Trainning"
-        android:textSize="20sp"
-        android:textColor="@color/buttonsTextColor"
-        tools:layout_constraintRight_creator="1"
+        android:layout_marginTop="48dp"
+        app:layout_constraintTop_toBottomOf="@+id/playNotesBtn"
         app:layout_constraintRight_toRightOf="@+id/playNotesBtn"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="@+id/playNotesBtn"
-        app:layout_constraintHorizontal_bias="0.0"
-        android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@+id/playNotesBtn" />
+        app:layout_constraintLeft_toLeftOf="@+id/playNotesBtn" />
+
 
     <Button
         android:layout_width="0dp"
@@ -65,7 +48,7 @@
         tools:layout_constraintLeft_creator="1"
         app:layout_constraintLeft_toLeftOf="@+id/trainChordsBtn"
         app:layout_constraintHorizontal_bias="0.0"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="48dp"
         app:layout_constraintTop_toBottomOf="@+id/trainChordsBtn" />
 
     <Button
@@ -81,7 +64,7 @@
         tools:layout_constraintLeft_creator="1"
         app:layout_constraintLeft_toLeftOf="@+id/headline"
         app:layout_constraintHorizontal_bias="0.0"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="56dp"
         app:layout_constraintTop_toBottomOf="@+id/headline" />
 
 
