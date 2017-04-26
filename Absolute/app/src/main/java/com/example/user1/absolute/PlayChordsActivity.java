@@ -1,27 +1,25 @@
 package com.example.user1.absolute;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Color;
 import android.media.MediaPlayer;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,6 +62,7 @@ public class PlayChordsActivity extends AppCompatActivity {
     Context context;
     boolean didUserAnswerCorrectly = true;
     int score;
+    boolean isGameOver = false;
 
     Integer resId;
     MediaPlayer chord;
@@ -93,11 +92,18 @@ public class PlayChordsActivity extends AppCompatActivity {
         wrongAnswersCounter = 0;
         score = 0;
 
+        chordType = setChordType();
+
         initPlayButton();
 
         initReplayButton();
 
         initQuitButton();
+
+       if(chordType != null)
+           initCheckAnswers();
+        else
+           Toast.makeText(context, "ChordType is null", Toast.LENGTH_LONG).show();
 
     }
 
@@ -110,10 +116,13 @@ public class PlayChordsActivity extends AppCompatActivity {
         replayChordFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (resId != null)
-                    playChord();
-                else
-                    Toast.makeText(context, "You have to play something first in order to replay it.", Toast.LENGTH_SHORT).show();
+                if (!isGameOver) {
+                    if (resId != null)
+                        playChord();
+                    else
+                        Toast.makeText(context, "You have to play something first in order to replay it.", Toast.LENGTH_SHORT).show();
+                } else
+                    gameOver();
             }
         });
     }
@@ -125,19 +134,21 @@ public class PlayChordsActivity extends AppCompatActivity {
         playChordFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (didUserAnswerCorrectly) {
-                    chordType = setChordType();
-                    playRandomChord(chordType);
-                    didUserAnswerCorrectly = false;
-                    playChordFab.setAlpha(0.5f);
-                    initCheckAnswers();
+                if (!isGameOver) {
+                    if (didUserAnswerCorrectly) {
+                        chordType = setChordType();
+                        playRandomChord(chordType);
+                        didUserAnswerCorrectly = false;
+                        playChordFab.setAlpha(0.5f);
+                    } else
+                        Toast.makeText(context, "You have to answer correctly first.", Toast.LENGTH_SHORT).show();
                 } else
-                    Toast.makeText(context, "You have to answer correctly first.", Toast.LENGTH_SHORT).show();
+                    gameOver();
             }
         });
     }
 
-    private void initQuitButton(){
+    private void initQuitButton() {
         quitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -154,64 +165,101 @@ public class PlayChordsActivity extends AppCompatActivity {
         majorBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stopChordIfPlaying(chord);
-                if (chordType.equals(ChordType.Major)) {
-                    playCorrectSoundEffect(majorBtn, context);
-                    releasePlayBtnFromFreeze();
-                    gainScore();
-                } else {
-                    playWrongSoundEffect(majorBtn, context);
-                    wrongAnswersCounter++;
-                    changeLifeIcons();
-                }
+                if (!isGameOver) {
+                    stopChordIfPlaying(chord);
+                    if (chordType.equals(ChordType.Major)) {//CORRECT ANSWER
+                        if (didUserAnswerCorrectly) {dontBeGreedyMsg(context);
+                        } else {
+                            playCorrectSoundEffect(majorBtn, context);
+                            releasePlayBtnFromFreeze();
+                            gainScore();
+                        }
+                    } else {//WRONG ANSWER
+                        if (didUserAnswerCorrectly) {dontLoseMoreLifeMsg(context);
+                        } else {
+                            playWrongSoundEffect(majorBtn, context);
+                            wrongAnswersCounter++;
+                            changeLifeIcons();
+                        }
+                    }
+                } else
+                    gameOver();
             }
         });
 
         minorBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stopChordIfPlaying(chord);
-                if (chordType.equals(ChordType.Minor)) {
-                    playCorrectSoundEffect(minorBtn, context);
-                    releasePlayBtnFromFreeze();
-                    gainScore();
-                } else {
-                    playWrongSoundEffect(minorBtn, context);
-                    wrongAnswersCounter++;
-                    changeLifeIcons();
-                }
+                if (!isGameOver) {
+                    stopChordIfPlaying(chord);
+                    if (chordType.equals(ChordType.Minor)) {//CORRECT ANSWER
+                        if (didUserAnswerCorrectly) {dontBeGreedyMsg(context);
+                        } else {
+                            playCorrectSoundEffect(minorBtn, context);
+                            releasePlayBtnFromFreeze();
+                            gainScore();
+                        }
+                    } else {//WRONG ANSWER
+                        if (didUserAnswerCorrectly) {dontLoseMoreLifeMsg(context);
+                        } else {
+                            playWrongSoundEffect(minorBtn, context);
+                            wrongAnswersCounter++;
+                            changeLifeIcons();
+                        }
+                    }
+                } else
+                    gameOver();
             }
         });
 
         diminishedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stopChordIfPlaying(chord);
-                if (chordType.equals(ChordType.Diminished)) {
-                    playCorrectSoundEffect(diminishedBtn, context);
-                    releasePlayBtnFromFreeze();
-                    gainScore();
-                } else {
-                    playWrongSoundEffect(diminishedBtn, context);
-                    wrongAnswersCounter++;
-                    changeLifeIcons();
-                }
+                if (!isGameOver) {
+                    stopChordIfPlaying(chord);
+                    if (chordType.equals(ChordType.Diminished)) {//CORRECT ANSWER
+                        if (didUserAnswerCorrectly) {dontBeGreedyMsg(context);
+                        } else {
+                            playCorrectSoundEffect(diminishedBtn, context);
+                            releasePlayBtnFromFreeze();
+                            gainScore();
+                        }
+                    } else {//WRONG ANSWER
+                        if (didUserAnswerCorrectly) {dontLoseMoreLifeMsg(context);
+                        } else {
+                            playWrongSoundEffect(diminishedBtn, context);
+                            wrongAnswersCounter++;
+                            changeLifeIcons();
+                        }
+                    }
+                } else
+                    gameOver();
             }
         });
 
         augmentedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stopChordIfPlaying(chord);
-                if (chordType.equals(ChordType.Augmented)) {
-                    playCorrectSoundEffect(augmentedBtn, context);
-                    releasePlayBtnFromFreeze();
-                    gainScore();
-                } else {
-                    playWrongSoundEffect(augmentedBtn, context);
-                    wrongAnswersCounter++;
-                    changeLifeIcons();
-                }
+                if (!isGameOver) {
+                    stopChordIfPlaying(chord);
+                    if (chordType.equals(ChordType.Augmented)) {//CORRECT ANSWER
+                        if (didUserAnswerCorrectly) {dontBeGreedyMsg(context);
+                        } else {
+                            playCorrectSoundEffect(augmentedBtn, context);
+                            releasePlayBtnFromFreeze();
+                            gainScore();
+                        }
+                    } else {//WRONG ANSWER
+                        if (didUserAnswerCorrectly) {dontLoseMoreLifeMsg(context);
+                        } else {
+                            playWrongSoundEffect(augmentedBtn, context);
+                            wrongAnswersCounter++;
+                            changeLifeIcons();
+                        }
+                    }
+                } else
+                    gameOver();
+
             }
         });
     }
@@ -352,7 +400,7 @@ public class PlayChordsActivity extends AppCompatActivity {
         textViewScore.setText("Score: +" + score);
     }
 
-    private void gameOver(){
+    private void gameOver() {
         new AlertDialog.Builder(context)
                 .setTitle("GAME OVER!")
                 .setMessage("Would you like to save your score?")
@@ -365,17 +413,20 @@ public class PlayChordsActivity extends AppCompatActivity {
                 })
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(PlayChordsActivity.this , MainActivity.class);
+                        Intent intent = new Intent(PlayChordsActivity.this, MainActivity.class);
                         intent.setAction(ACTION_GOTO);
                         startActivity(intent);
                     }
                 })
                 .setIcon(android.R.drawable.ic_dialog_info)
                 .show();
+        isGameOver = true;
     }
 
-    private void saveScoreAlertDialog(){
-
+    /**
+     * This method activates the Alert
+     */
+    private void saveScoreAlertDialog() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
@@ -389,18 +440,19 @@ public class PlayChordsActivity extends AppCompatActivity {
                 .setNeutralButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        userName = input.getText().toString();
-                        Intent intent = new Intent (PlayChordsActivity.this , HighScoresActivity.class);
-                        intent.putExtra("USERNAME", userName);
-                        intent.putExtra("SCORE", score);
-                        intent.setAction(ACTION_SAVE);
-                        startActivity(intent);
+                        if (!input.getText().toString().equals("")) {
+                            userName = input.getText().toString();
+                            Intent intent = new Intent(PlayChordsActivity.this, HighScoresActivity.class);
+                            intent.putExtra("USERNAME", userName);
+                            intent.putExtra("SCORE", score);
+                            intent.setAction(ACTION_SAVE);
+                            startActivity(intent);
+                        } else
+                            Toast.makeText(context, "You have to enter a name first", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .setIcon(android.R.drawable.ic_dialog_info)
                 .show();
-
-
     }
 
     /**
@@ -441,6 +493,13 @@ public class PlayChordsActivity extends AppCompatActivity {
 
         Vibrator v = (Vibrator) context.getSystemService(context.VIBRATOR_SERVICE);
         v.vibrate(600);
+    }
+
+    public static void dontBeGreedyMsg(Context context){
+        Toast.makeText(context, "Don't be greedy...", Toast.LENGTH_SHORT).show();
+    }
+    public static void dontLoseMoreLifeMsg(Context context){
+        Toast.makeText(context, "You don't want to lose more life, do you?", Toast.LENGTH_SHORT).show();
     }
 
 }
