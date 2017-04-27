@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.trainChordsBtn)
     Button trainChordsBtn;
+    @BindView(R.id.trainNotesBtn)
+    Button trainNotesBtn;
     @BindView(R.id.highScores)
     Button highScores;
 
@@ -47,7 +49,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent playChordsIntent = new Intent(MainActivity.this, PlayChordsActivity.class);
+                playChordsIntent.setAction(ACTION_GOTO);
                 startActivity(playChordsIntent);
+            }
+        });
+
+        trainNotesBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent playNotesIntent = new Intent(MainActivity.this, PlayNotesActivity.class);
+                playNotesIntent.setAction(ACTION_GOTO);
+                startActivity(playNotesIntent);
             }
         });
 
@@ -185,6 +197,20 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return augmentedChordsList;
+    }
+
+    public static ArrayList<Integer> getOrdinaryNotes(Context context, String type){
+        //This contains, for example all the C notes and the C# notes
+        ArrayList<Integer> sameToneNotes = getRawResourcesListByType(context, type);
+
+        //Unwanted types:
+        ArrayList<Integer> unwantedDieses = getRawResourcesListByType(context, type + "diese_");
+        ArrayList<Integer> unwantedBemolles = getRawResourcesListByType(context, type + "bemolle_");
+
+        sameToneNotes.removeAll(unwantedDieses);
+        sameToneNotes.removeAll(unwantedBemolles);
+
+        return sameToneNotes;
     }
 
 

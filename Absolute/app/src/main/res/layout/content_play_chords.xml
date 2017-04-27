@@ -44,7 +44,7 @@
         android:layout_alignTop="@+id/augmentedBtn"
         android:layout_marginLeft="120dp"
         android:textSize="23sp"
-        android:id="@+id/Score"/>
+        android:id="@+id/chordsScore"/>
 
 
     <Button
@@ -99,7 +99,7 @@
         android:layout_marginTop="2dp"/>
 
     <Button
-        android:id="@+id/quitBtn"
+        android:id="@+id/chordsQuitBtn"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:text="QUIT"

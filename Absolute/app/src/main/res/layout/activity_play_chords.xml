@@ -21,15 +21,8 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_play_chords" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/playChordFab"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="bottom|right"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_media_play" />
+    <include layout="@layout/content_play_chords"
+        android:id="@+id/include2" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/replayChordFab"
@@ -38,6 +31,16 @@
         android:layout_gravity="bottom|left"
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@android:drawable/ic_menu_rotate" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/playChordFab"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@android:drawable/ic_media_play"
+        app:layout_anchor="@+id/include2"
+        app:layout_anchorGravity="bottom|right" />
 
 
 </android.support.design.widget.CoordinatorLayout>

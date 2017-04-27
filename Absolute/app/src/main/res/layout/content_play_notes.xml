@@ -13,33 +13,82 @@
     tools:showIn="@layout/activity_play_notes"
     android:background="@color/colorPrimary">
 
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/heart_icon"
+        android:id="@+id/notesStrikeOne"/>
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/heart_icon"
+        android:id="@+id/notesStrikeTwo"
+        android:layout_toRightOf="@id/notesStrikeOne"
+        android:layout_toEndOf="@id/notesStrikeOne"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"/>
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/heart_icon"
+        android:id="@+id/notesStrikeThree"
+        android:layout_toRightOf="@id/notesStrikeTwo"
+        android:layout_toEndOf="@+id/notesStrikeTwo"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Score: +0"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="120dp"
+        android:layout_marginStart="120dp"
+        android:textSize="23sp"
+        android:id="@+id/notesScore"/>
+
+    <Button
+        android:id="@+id/notesQuitBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:text="QUIT"
+        android:textSize="19sp"
+        android:background="#eF4030"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="8dp"/>
+
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp">
 
         <TableRow>
-            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:layout_weight="1" android:background="@drawable/buttons" android:text="A" android:textSize="30sp"/>
-            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:layout_weight="1" android:background="@drawable/buttons" android:text="B♭" android:textSize="30sp"/>
-            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:layout_weight="1" android:background="@drawable/buttons" android:text="B" android:textSize="30sp"/>
-            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:layout_weight="1" android:background="@drawable/buttons" android:text="C" android:textSize="30sp"/>
+            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:id="@+id/a_note" android:layout_weight="1" android:background="@drawable/buttons_primary" android:text="A" android:textSize="30sp"/>
+            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:id="@+id/b_bemolle_note" android:layout_weight="1" android:background="@drawable/buttons_primary" android:text="♭B" android:textSize="30sp"/>
+            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:id="@+id/b_note" android:layout_weight="1" android:background="@drawable/buttons_primary" android:text="B" android:textSize="30sp"/>
+            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:id="@+id/c_note" android:layout_weight="1" android:background="@drawable/buttons_primary" android:text="C" android:textSize="30sp"/>
         </TableRow>
 
         <TableRow>
-            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:layout_weight="1" android:background="@drawable/buttons" android:text="C#" android:textSize="30sp"/>
-            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:layout_weight="1" android:background="@drawable/buttons" android:text="D" android:textSize="30sp"/>
-            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:layout_weight="1" android:background="@drawable/buttons" android:text="E♭" android:textSize="30sp"/>
-            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:layout_weight="1" android:background="@drawable/buttons" android:text="E" android:textSize="30sp"/>
+            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:id="@+id/c_diese__note" android:layout_weight="1" android:background="@drawable/buttons_primary" android:text="C#" android:textSize="30sp"/>
+            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:id="@+id/d_note" android:layout_weight="1" android:background="@drawable/buttons_primary" android:text="D" android:textSize="30sp"/>
+            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:id="@+id/e_bemmole_note" android:layout_weight="1" android:background="@drawable/buttons_primary" android:text="♭E" android:textSize="30sp"/>
+            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:id="@+id/e_note" android:layout_weight="1" android:background="@drawable/buttons_primary" android:text="E" android:textSize="30sp"/>
         </TableRow>
 
         <TableRow>
-            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:layout_weight="1" android:background="@drawable/buttons" android:text="F" android:textSize="30sp"/>
-            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:layout_weight="1" android:background="@drawable/buttons" android:text="F#" android:textSize="30sp"/>
-            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:layout_weight="1" android:background="@drawable/buttons" android:text="G" android:textSize="30sp"/>
-            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:layout_weight="1" android:background="@drawable/buttons" android:text="G#" android:textSize="30sp"/>
+            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:id="@+id/f_note" android:layout_weight="1" android:background="@drawable/buttons_primary" android:text="F" android:textSize="30sp"/>
+            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:id="@+id/f_diese_note" android:layout_weight="1" android:background="@drawable/buttons_primary" android:text="F#" android:textSize="30sp"/>
+            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:id="@+id/g_note" android:layout_weight="1" android:background="@drawable/buttons_primary" android:text="G" android:textSize="30sp"/>
+            <Button android:layout_height="87dp" android:layout_width="wrap_content" android:id="@+id/g_diese_note" android:layout_weight="1" android:background="@drawable/buttons_primary" android:text="G#" android:textSize="30sp"/>
         </TableRow>
 
 
     </TableLayout>
+
+
 
 </RelativeLayout>

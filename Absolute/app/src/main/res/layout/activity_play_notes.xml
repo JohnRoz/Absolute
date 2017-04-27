@@ -24,11 +24,33 @@
     <include layout="@layout/content_play_notes" android:id="@+id/include" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/playNotesFab2"
+        android:id="@+id/replayNoteFab"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_margin="@dimen/fab_margin"
-        android:layout_gravity="bottom"
-        app:srcCompat="@android:drawable/ic_media_play"/>
+        android:layout_gravity="top|right"
+        app:srcCompat="@android:drawable/ic_menu_rotate"
+        android:layout_marginLeft="49dp"
+        android:layout_marginBottom="45dp"
+        android:layout_marginStart="49dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        app:layout_anchor="@+id/include"
+        app:layout_anchorGravity="bottom|left" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/playNoteFab"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:srcCompat="@android:drawable/ic_media_play"
+        android:layout_marginRight="60dp"
+        android:layout_alignTop="@+id/replayNoteFab"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="43dp"
+        android:layout_marginEnd="60dp"
+        app:layout_anchor="@+id/include"
+        app:layout_anchorGravity="bottom|right"
+        android:layout_gravity="center_vertical|left" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -47,14 +47,14 @@ public class PlayChordsActivity extends AppCompatActivity {
     @BindView(R.id.replayChordFab)
     FloatingActionButton replayChordFab;
     @BindView(R.id.chordsStrikeOne)
-    ImageView strike1;
+    ImageView chordsStrike1;
     @BindView(R.id.chordsStrikeTwo)
-    ImageView strike2;
+    ImageView chordsStrike2;
     @BindView(R.id.chordsStrikeThree)
-    ImageView strike3;
-    @BindView(R.id.Score)
+    ImageView chordsStrike3;
+    @BindView(R.id.chordsScore)
     TextView textViewScore;
-    @BindView(R.id.quitBtn)
+    @BindView(R.id.chordsQuitBtn)
     Button quitBtn;
 
     ChordType chordType;
@@ -380,13 +380,13 @@ public class PlayChordsActivity extends AppCompatActivity {
     private void changeLifeIcons() {
         switch (wrongAnswersCounter) {
             case 1:
-                strike1.setImageResource(R.drawable.x_icon);
+                chordsStrike1.setImageResource(R.drawable.x_icon);
                 break;
             case 2:
-                strike2.setImageResource(R.drawable.x_icon);
+                chordsStrike2.setImageResource(R.drawable.x_icon);
                 break;
             case 3:
-                strike3.setImageResource(R.drawable.x_icon);
+                chordsStrike3.setImageResource(R.drawable.x_icon);
                 gameOver();
                 break;
         }
