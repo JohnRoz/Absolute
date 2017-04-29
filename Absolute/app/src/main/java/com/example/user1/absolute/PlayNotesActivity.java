@@ -1,12 +1,12 @@
 package com.example.user1.absolute;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -27,7 +26,6 @@ import butterknife.ButterKnife;
 
 import static com.example.user1.absolute.MainActivity.ACTION_GOTO;
 import static com.example.user1.absolute.MainActivity.ACTION_SAVE;
-import static com.example.user1.absolute.MainActivity.getOrdinaryNotes;
 import static com.example.user1.absolute.MainActivity.getRawResourcesListByType;
 import static com.example.user1.absolute.PlayChordsActivity.dontBeGreedyMsg;
 import static com.example.user1.absolute.PlayChordsActivity.dontLoseMoreLifeMsg;
@@ -82,8 +80,9 @@ public class PlayNotesActivity extends AppCompatActivity {
     int score;
     boolean isGameOver = false;
 
-    Integer resId;
-    MediaPlayer note;
+    static Integer noteResId;
+    static MediaPlayer note;
+    static String notesContextStr;
 
     ArrayList<Integer> aNotesList;
     ArrayList<Integer> bBemolleNotesList;
@@ -108,7 +107,6 @@ public class PlayNotesActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
 
-        //TODO FIX THE METHOD THAT BRINGS THE NOTES RESOURCES!!!!!!! *MAJOR ISSUE!!!*
         aNotesList = getRawResourcesListByType(this, "_a_");
         bBemolleNotesList = getRawResourcesListByType(this, "_bbemolle_");
         bNotesList = getRawResourcesListByType(this, "_b_");
@@ -123,6 +121,7 @@ public class PlayNotesActivity extends AppCompatActivity {
         gDieseNotesList = getRawResourcesListByType(this, "_gdiese_");
 
         context = PlayNotesActivity.this;
+        notesContextStr = context.toString();
 
         wrongAnswersCounter = 0;
         score = 0;
@@ -135,7 +134,7 @@ public class PlayNotesActivity extends AppCompatActivity {
 
         initQuitButton();
 
-        if(noteType != null)
+        if (noteType != null)
             initCheckAnswers();
         else
             Toast.makeText(context, "NoteType is null", Toast.LENGTH_LONG).show();
@@ -151,7 +150,7 @@ public class PlayNotesActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!isGameOver) {
-                    if (resId != null)
+                    if (noteResId != null)
                         playNote();
                     else
                         Toast.makeText(context, "You have to play something first in order to replay it.", Toast.LENGTH_SHORT).show();
@@ -172,7 +171,7 @@ public class PlayNotesActivity extends AppCompatActivity {
                     if (didUserAnswerCorrectly) {
                         noteType = setNoteType();
                         playRandomNote(noteType);
-                        Toast.makeText(context, "noteType: " +  noteType, Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, "noteType: " + noteType, Toast.LENGTH_LONG).show();
                         didUserAnswerCorrectly = false;
                         playNoteFab.setAlpha(0.5f);
                     } else
@@ -185,7 +184,7 @@ public class PlayNotesActivity extends AppCompatActivity {
 
 
     /**
-     * This method is in charge of activating the method that sets a new random resId value, and then to play the note chosen.
+     * This method is in charge of activating the method that sets a new random noteResId value, and then to play the note chosen.
      *
      * @param noteType The type of the note that should be played.
      */
@@ -234,23 +233,23 @@ public class PlayNotesActivity extends AppCompatActivity {
 
     /**
      * This method gets an ArrayList of Integers that represent resource IDs.
-     * The method chooses one of those resource IDs randomly, and saves it into the global variable 'resId'.
+     * The method chooses one of those resource IDs randomly, and saves it into the global variable 'noteResId'.
      *
      * @param notes The ArrayList containing the resource IDs
      */
     private void setRandomResIdFromList(ArrayList<Integer> notes) {
         Random random = new Random();
         int index = random.nextInt(notes.size());
-        this.resId = notes.get(index);
+        noteResId = notes.get(index);
     }
 
     /**
-     * This method is in charge of playing the note that is represented by the global variable 'resId'.
+     * This method is in charge of playing the note that is represented by the global variable 'noteResId'.
      */
     private void playNote() {
 
         // Play chosen note
-        note = MediaPlayer.create(context, resId);
+        note = MediaPlayer.create(context, noteResId);
         note.start();
 
         // When done playing, release the MediaPlayer.
@@ -268,7 +267,7 @@ public class PlayNotesActivity extends AppCompatActivity {
         quitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gameOver();
+                areYouSureYouWantToQuit();
             }
         });
     }
@@ -349,6 +348,29 @@ public class PlayNotesActivity extends AppCompatActivity {
         textViewScore.setText("Score: +" + score);
     }
 
+    private void areYouSureYouWantToQuit() {
+        if (isGameOver)
+            gameOver();
+        else {
+            new AlertDialog.Builder(context)
+                    .setTitle("Hold On!")
+                    .setMessage("Are you sure you want to quit the game?")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            gameOver();
+
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // DO NOTHING...
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
+    }
+
     private void gameOver() {
         new AlertDialog.Builder(context)
                 .setTitle("GAME OVER!")
@@ -363,6 +385,7 @@ public class PlayNotesActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(PlayNotesActivity.this, MainActivity.class);
                         intent.setAction(ACTION_GOTO);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                     }
                 })
@@ -456,8 +479,6 @@ public class PlayNotesActivity extends AppCompatActivity {
         G_Note,
         G_Diese_Note
     }
-
-
 
 
 }

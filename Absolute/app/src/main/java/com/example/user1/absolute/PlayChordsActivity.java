@@ -13,13 +13,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,8 +61,9 @@ public class PlayChordsActivity extends AppCompatActivity {
     int score;
     boolean isGameOver = false;
 
-    Integer resId;
-    MediaPlayer chord;
+    static Integer chordResId;
+    static MediaPlayer chord;
+    static String chordsContextStr;
 
     ArrayList<Integer> augmentedChordsList;
     ArrayList<Integer> diminishedChordsList;
@@ -88,6 +86,7 @@ public class PlayChordsActivity extends AppCompatActivity {
         minorChordsList = MainActivity.getRawResourcesListByType(this, "_min_");
 
         context = PlayChordsActivity.this;
+        chordsContextStr = context.toString();
 
         wrongAnswersCounter = 0;
         score = 0;
@@ -100,10 +99,10 @@ public class PlayChordsActivity extends AppCompatActivity {
 
         initQuitButton();
 
-       if(chordType != null)
-           initCheckAnswers();
+        if (chordType != null)
+            initCheckAnswers();
         else
-           Toast.makeText(context, "ChordType is null", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "ChordType is null", Toast.LENGTH_LONG).show();
 
     }
 
@@ -117,7 +116,7 @@ public class PlayChordsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!isGameOver) {
-                    if (resId != null)
+                    if (chordResId != null)
                         playChord();
                     else
                         Toast.makeText(context, "You have to play something first in order to replay it.", Toast.LENGTH_SHORT).show();
@@ -152,7 +151,7 @@ public class PlayChordsActivity extends AppCompatActivity {
         quitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gameOver();
+                areYouSureYouWantToQuit();
             }
         });
     }
@@ -168,14 +167,16 @@ public class PlayChordsActivity extends AppCompatActivity {
                 if (!isGameOver) {
                     stopChordIfPlaying(chord);
                     if (chordType.equals(ChordType.Major)) {//CORRECT ANSWER
-                        if (didUserAnswerCorrectly) {dontBeGreedyMsg(context);
+                        if (didUserAnswerCorrectly) {
+                            dontBeGreedyMsg(context);
                         } else {
                             playCorrectSoundEffect(majorBtn, context);
                             releasePlayBtnFromFreeze();
                             gainScore();
                         }
                     } else {//WRONG ANSWER
-                        if (didUserAnswerCorrectly) {dontLoseMoreLifeMsg(context);
+                        if (didUserAnswerCorrectly) {
+                            dontLoseMoreLifeMsg(context);
                         } else {
                             playWrongSoundEffect(majorBtn, context);
                             wrongAnswersCounter++;
@@ -193,14 +194,16 @@ public class PlayChordsActivity extends AppCompatActivity {
                 if (!isGameOver) {
                     stopChordIfPlaying(chord);
                     if (chordType.equals(ChordType.Minor)) {//CORRECT ANSWER
-                        if (didUserAnswerCorrectly) {dontBeGreedyMsg(context);
+                        if (didUserAnswerCorrectly) {
+                            dontBeGreedyMsg(context);
                         } else {
                             playCorrectSoundEffect(minorBtn, context);
                             releasePlayBtnFromFreeze();
                             gainScore();
                         }
                     } else {//WRONG ANSWER
-                        if (didUserAnswerCorrectly) {dontLoseMoreLifeMsg(context);
+                        if (didUserAnswerCorrectly) {
+                            dontLoseMoreLifeMsg(context);
                         } else {
                             playWrongSoundEffect(minorBtn, context);
                             wrongAnswersCounter++;
@@ -218,14 +221,16 @@ public class PlayChordsActivity extends AppCompatActivity {
                 if (!isGameOver) {
                     stopChordIfPlaying(chord);
                     if (chordType.equals(ChordType.Diminished)) {//CORRECT ANSWER
-                        if (didUserAnswerCorrectly) {dontBeGreedyMsg(context);
+                        if (didUserAnswerCorrectly) {
+                            dontBeGreedyMsg(context);
                         } else {
                             playCorrectSoundEffect(diminishedBtn, context);
                             releasePlayBtnFromFreeze();
                             gainScore();
                         }
                     } else {//WRONG ANSWER
-                        if (didUserAnswerCorrectly) {dontLoseMoreLifeMsg(context);
+                        if (didUserAnswerCorrectly) {
+                            dontLoseMoreLifeMsg(context);
                         } else {
                             playWrongSoundEffect(diminishedBtn, context);
                             wrongAnswersCounter++;
@@ -243,14 +248,16 @@ public class PlayChordsActivity extends AppCompatActivity {
                 if (!isGameOver) {
                     stopChordIfPlaying(chord);
                     if (chordType.equals(ChordType.Augmented)) {//CORRECT ANSWER
-                        if (didUserAnswerCorrectly) {dontBeGreedyMsg(context);
+                        if (didUserAnswerCorrectly) {
+                            dontBeGreedyMsg(context);
                         } else {
                             playCorrectSoundEffect(augmentedBtn, context);
                             releasePlayBtnFromFreeze();
                             gainScore();
                         }
                     } else {//WRONG ANSWER
-                        if (didUserAnswerCorrectly) {dontLoseMoreLifeMsg(context);
+                        if (didUserAnswerCorrectly) {
+                            dontLoseMoreLifeMsg(context);
                         } else {
                             playWrongSoundEffect(augmentedBtn, context);
                             wrongAnswersCounter++;
@@ -289,7 +296,7 @@ public class PlayChordsActivity extends AppCompatActivity {
     }
 
     /**
-     * This method is in charge of activating the method that sets a new random resId value, and then to play the chord chosen.
+     * This method is in charge of activating the method that sets a new random chordResId value, and then to play the chord chosen.
      *
      * @param chordType The type of the chord that should be played: Major, Minor, Diminished or Augmented.
      */
@@ -313,23 +320,23 @@ public class PlayChordsActivity extends AppCompatActivity {
 
     /**
      * This method gets an ArrayList of Integers that represent resource IDs.
-     * The method chooses one of those resource IDs randomly, and saves it into the global variable 'resId'.
+     * The method chooses one of those resource IDs randomly, and saves it into the global variable 'chordResId'.
      *
      * @param chords The ArrayList containing the resource IDs
      */
     private void setRandomResIdFromList(ArrayList<Integer> chords) {
         Random random = new Random();
         int index = random.nextInt(chords.size());
-        this.resId = chords.get(index);
+        this.chordResId = chords.get(index);
     }
 
     /**
-     * This method is in charge of playing the chord that is represented by the global variable 'resId'.
+     * This method is in charge of playing the chord that is represented by the global variable 'chordResId'.
      */
     private void playChord() {
 
         // Play chosen chord
-        chord = MediaPlayer.create(context, resId);
+        chord = MediaPlayer.create(context, chordResId);
         chord.start();
 
         // When done playing, release the MediaPlayer.
@@ -400,6 +407,29 @@ public class PlayChordsActivity extends AppCompatActivity {
         textViewScore.setText("Score: +" + score);
     }
 
+    private void areYouSureYouWantToQuit() {
+        if (isGameOver)
+            gameOver();
+        else {
+            new AlertDialog.Builder(context)
+                    .setTitle("Hold On!")
+                    .setMessage("Are you sure you want to quit the game?")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            gameOver();
+
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // DO NOTHING...
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
+    }
+
     private void gameOver() {
         new AlertDialog.Builder(context)
                 .setTitle("GAME OVER!")
@@ -415,6 +445,7 @@ public class PlayChordsActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(PlayChordsActivity.this, MainActivity.class);
                         intent.setAction(ACTION_GOTO);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                     }
                 })
@@ -454,6 +485,7 @@ public class PlayChordsActivity extends AppCompatActivity {
                 .setIcon(android.R.drawable.ic_dialog_info)
                 .show();
     }
+
 
     /**
      * Plays a "Correct" sound effect whenever the user gives a correct answer.
@@ -495,10 +527,11 @@ public class PlayChordsActivity extends AppCompatActivity {
         v.vibrate(600);
     }
 
-    public static void dontBeGreedyMsg(Context context){
+    public static void dontBeGreedyMsg(Context context) {
         Toast.makeText(context, "Don't be greedy...", Toast.LENGTH_SHORT).show();
     }
-    public static void dontLoseMoreLifeMsg(Context context){
+
+    public static void dontLoseMoreLifeMsg(Context context) {
         Toast.makeText(context, "You don't want to lose more life, do you?", Toast.LENGTH_SHORT).show();
     }
 

@@ -1,25 +1,22 @@
 package com.example.user1.absolute;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,9 +30,11 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.highScores)
     Button highScores;
 
-    final static String ACTION_SAVE = "SAVE";
-    final static String ACTION_GOTO = "GOTO";
+    final static String ACTION_SAVE = "com.example.user1.absolute.action.SAVE";
+    final static String ACTION_GOTO = "com.example.user1.absolute.action.GOTO";
 
+    // CONSTANTS
+    public final static int PERMISSION_READ_PHONE_STATE = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent playChordsIntent = new Intent(MainActivity.this, PlayChordsActivity.class);
                 playChordsIntent.setAction(ACTION_GOTO);
+                playChordsIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(playChordsIntent);
             }
         });
@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent playNotesIntent = new Intent(MainActivity.this, PlayNotesActivity.class);
                 playNotesIntent.setAction(ACTION_GOTO);
+                playNotesIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(playNotesIntent);
             }
         });
@@ -68,9 +69,12 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent highScoresIntent = new Intent(MainActivity.this, HighScoresActivity.class);
                 highScoresIntent.setAction(ACTION_GOTO);
+                highScoresIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(highScoresIntent);
             }
         });
+
+        handlePhoneCallPermission();
     }
 
 
@@ -89,11 +93,29 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+
+        switch(id){
+            case R.id.action_settings:
+                return true;
+            case R.id.action_hello:
+                Toast.makeText(this, "Hello", Toast.LENGTH_SHORT).show();
+                break;
+
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void handlePhoneCallPermission() {
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_PHONE_STATE},
+                    PERMISSION_READ_PHONE_STATE);
+        }
     }
 
     /**
@@ -132,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * This method gets the IDs of the resources from the 'raw' directory,
      * using the sinner function {@link #getRawResourcesNames}().
+     *
      * @param context A Static method cannot use the getApplicationContext() method, so just insert a Context.
      * @return An ArrayList of the IDs of my raw resource files.
      */
@@ -147,14 +170,15 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * This method creates an arraylist of IDs of the notes files ONLY. It filters all other files.
+     *
      * @param context A Static method cannot use the getApplicationContext() method, so just insert a Context.
      * @return An ArrayList of the IDs of the note sound files in the raw resources directory.
      */
-    public static ArrayList<Integer> getNotesList(Context context){
+    public static ArrayList<Integer> getNotesList(Context context) {
         // Gets an arrayList of strings containing the names of all the notes resources.
         ArrayList<String> allRawResourcesNames = getRawResourcesNames(context);
         ArrayList<String> unwantedRawResourcesNames = new ArrayList<>();
-        for(String name : allRawResourcesNames)
+        for (String name : allRawResourcesNames)
             if (!name.contains("_note_"))
                 unwantedRawResourcesNames.add(name);
 
@@ -173,15 +197,16 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * This method creates an arrayList of IDs of the type of files inserted ONLY. It filters all other files.
+     *
      * @param context A Static method cannot use the getApplicationContext() method, so just insert a Context.
-     * @param type A string of the form "_A_" where A is the type of raw resource files wanted.
+     * @param type    A string of the form "_A_" where A is the type of raw resource files wanted.
      * @return An ArrayList of the IDs of the augmented chords sound files in the raw resources directory.
      */
-    public static ArrayList<Integer> getRawResourcesListByType(Context context, String type){
+    public static ArrayList<Integer> getRawResourcesListByType(Context context, String type) {
         // Gets an arrayList of strings containing the names of all the raw resources.
         ArrayList<String> allRawResourcesNames = getRawResourcesNames(context);
         ArrayList<String> unwantedRawResourcesNames = new ArrayList<>();
-        for(String name : allRawResourcesNames)
+        for (String name : allRawResourcesNames)
             if (!name.contains(type))
                 unwantedRawResourcesNames.add(name);
 
@@ -199,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
         return augmentedChordsList;
     }
 
-    public static ArrayList<Integer> getOrdinaryNotes(Context context, String type){
+    public static ArrayList<Integer> getOrdinaryNotes(Context context, String type) {
         //This contains, for example all the C notes and the C# notes
         ArrayList<Integer> sameToneNotes = getRawResourcesListByType(context, type);
 
@@ -212,8 +237,6 @@ public class MainActivity extends AppCompatActivity {
 
         return sameToneNotes;
     }
-
-
 
 
 }
