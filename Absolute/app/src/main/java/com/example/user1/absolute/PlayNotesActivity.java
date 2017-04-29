@@ -171,7 +171,7 @@ public class PlayNotesActivity extends AppCompatActivity {
                     if (didUserAnswerCorrectly) {
                         noteType = setNoteType();
                         playRandomNote(noteType);
-                        Toast.makeText(context, "noteType: " + noteType, Toast.LENGTH_LONG).show();
+                        //Toast.makeText(context, "noteType: " + noteType, Toast.LENGTH_LONG).show();
                         didUserAnswerCorrectly = false;
                         playNoteFab.setAlpha(0.5f);
                     } else
