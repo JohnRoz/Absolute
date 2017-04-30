@@ -45,17 +45,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
                     stopPlaying(note);
             }
 
-
-        } else if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
-            if (context.equals(chordsContext)) {
-                if (wasStopped)
-                    replayAfterCallEnded(chordResId, context);
-            } else if (context.equals(notesContext)) {
-                if (wasStopped)
-                    replayAfterCallEnded(noteResId, context);
-            }
         }
-
     }
 
     private void stopPlaying(MediaPlayer mp) {
@@ -63,33 +53,5 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         mp.release();
         mp = null;
         wasStopped = true;
-    }
-
-    private void replayAfterCallEnded(Integer resId, Context context) {
-        if (resId != null) {
-            if (context.equals(chordsContext))
-                mediaPlayer = chord;
-            else if (context.equals(notesContext))
-                mediaPlayer = note;
-
-            if (mediaPlayer != null) {
-
-                mediaPlayer = MediaPlayer.create(context, resId);
-                mediaPlayer.start();
-
-                // When done playing, release the MediaPlayer.
-                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        mp.release();
-                        mp = null;
-                        mediaPlayer = null;
-                    }
-                });
-
-            }
-
-        } else
-            Toast.makeText(context, "You have to play something first in order to replay it.", Toast.LENGTH_SHORT).show();
     }
 }

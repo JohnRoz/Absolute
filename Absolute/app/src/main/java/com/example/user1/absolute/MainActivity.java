@@ -95,8 +95,6 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
 
         switch(id){
-            case R.id.action_settings:
-                return true;
             case R.id.action_hello:
                 Toast.makeText(this, "Hello", Toast.LENGTH_SHORT).show();
                 break;
